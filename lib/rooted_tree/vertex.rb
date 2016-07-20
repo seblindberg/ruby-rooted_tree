@@ -210,17 +210,37 @@ module RootedTree
       end
     end
     
-    def each
-      
+    # Each
+    #
+    #
+    
+    def each(&block)
+      return to_enum(__callee__) unless block_given?
+      yield self
+      children { |v| v.each(&block) }
     end
     
     # Leafs
     #
-    # Iterates over each of the leafs
+    # Iterates over each of the leafs.
+    
     def leafs(rtl: false, &block)
       return to_enum(__callee__, rtl: rtl) unless block_given?
       return yield self if leaf?
       children(rtl: rtl) { |v| v.leafs(rtl: rtl, &block) }
+    end
+    
+    # Edges
+    #
+    # Iterates over each of the edges.
+    
+    def edges(&block)
+      return to_enum(__callee__) unless block_given?
+      
+      children do |v|
+        yield self, v
+        v.edges(&block)
+      end
     end
     
     # Inspect
@@ -261,7 +281,7 @@ module RootedTree
     #
     #
     
-    def structure
+    def structure as_array: false
       
     end
   end

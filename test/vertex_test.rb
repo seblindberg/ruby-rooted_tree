@@ -256,18 +256,42 @@ describe RootedTree::Vertex do
     end
   end
   
+  describe '#each' do
+    it 'returns an enumerator' do
+      assert_kind_of Enumerator, root.each
+    end
+    
+    it 'iterates over the vertex itself for a leaf' do
+      enum = root.each
+      assert_equal root, enum.next
+      assert_raises(StopIteration) { enum.next }
+    end
+    
+    it 'iterates over the vertecies' do
+      root << (child_a << child_c) << child_b
+      enum = root.each
+      
+      assert_equal root, enum.next
+      assert_equal child_a, enum.next
+      assert_equal child_c, enum.next
+      assert_equal child_b, enum.next
+      assert_raises(StopIteration) { enum.next }
+    end
+  end
+  
   describe '#leafs' do
     it 'returns an enumerator' do
       assert_kind_of Enumerator, root.leafs
     end
     
     it 'iterates over the vertex itself for a leaf' do
-      assert_equal root, root.leafs.next
+      enum = root.leafs
+      assert_equal root, enum.next
+      assert_raises(StopIteration) { enum.next }
     end
     
     it 'iterates over the leafs of the tree left to right' do
-      root << child_a << child_b
-      child_a << child_c
+      root << (child_a << child_c) << child_b
       enum = root.leafs
       
       assert_equal child_c, enum.next
@@ -276,12 +300,28 @@ describe RootedTree::Vertex do
     end
     
     it 'iterates over the leafs of the tree right to left' do
-      root << child_a << child_b
-      child_a << child_c
+      root << (child_a << child_c) << child_b
       enum = root.leafs rtl: true
       
       assert_equal child_b, enum.next
       assert_equal child_c, enum.next
+      assert_raises(StopIteration) { enum.next }
+    end
+  end
+  
+  describe '#edges' do
+    it 'returns an enumerator' do
+      assert_kind_of Enumerator, root.edges
+    end
+    
+    it 'iterates over the edges' do
+      root << (child_a << child_c) << child_b
+      enum = root.edges
+      
+      assert_equal [root, child_a], enum.next
+      assert_equal [child_a, child_c], enum.next
+      assert_equal [root, child_b], enum.next
+      
       assert_raises(StopIteration) { enum.next }
     end
   end
