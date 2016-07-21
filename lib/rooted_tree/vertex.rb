@@ -28,6 +28,16 @@ module RootedTree
       @last_child = nil
     end
     
+    def initialize_copy original
+      # Duplicate the children
+      duped_children = children.map { |v| v.dup.tap{ |w| w.parent = self }  }
+      duped_children.each_cons(2) { |v, w| v.next, w.prev = w, v }
+      
+      @parent = nil
+      @first_child = duped_children.first
+      @last_child = duped_children.last
+    end
+    
     # Leaf?
     #
     # A vertex is a leaf if it has no children.
@@ -169,6 +179,40 @@ module RootedTree
     
     alias :<< :append_child
     
+    # Subtree!
+    #
+    # Extracts the vertex and its subtree from the larger structure.
+    
+    def subtree!
+      return self if root?
+      
+      if last?
+        parent.last_child = @prev
+      else
+        @next.prev = @prev
+      end
+      
+      if first?
+        parent.first_child = @next
+      else
+        @prev.next = @next
+      end
+      
+      @prev = @next = @parent = nil
+      
+      self
+    end
+    
+    alias :subtree :dup
+    
+    # Delete
+    #
+    # Removes the vertex from the tree.
+    
+    def delete
+      subtree!.children.map{ |v| v.parent = nil; v }
+    end
+    
     # Ancestors
     #
     # Returns an enumerator that will iterate over the parents of this vertex
@@ -241,6 +285,26 @@ module RootedTree
         yield self, v
         v.edges(&block)
       end
+    end
+    
+    def + vertex
+      
+    end
+    
+    # Equality
+    #
+    # Returns true if the two vertecies form identical subtrees
+    
+    def == vertex
+      return vertex.leaf? if leaf?
+      
+      vertex_children = vertex.children
+      
+      children.all? do |v|
+        v == vertex_children.next
+      end
+    rescue StopIteration
+      false
     end
     
     # Inspect

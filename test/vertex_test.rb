@@ -77,7 +77,7 @@ describe RootedTree::Vertex do
     it 'returns the next vertex' do
       root << child_a << child_b
       
-      assert_equal child_b, child_a.next
+      assert_same child_b, child_a.next
     end
     
     it 'raises a StopIteration at the last child' do
@@ -93,7 +93,7 @@ describe RootedTree::Vertex do
     
     it 'returns the previous vertex' do
       root << child_a << child_b
-      assert_equal child_a, child_b.prev
+      assert_same child_a, child_b.prev
     end
     
     it 'raises a StopIteration at the first child' do
@@ -109,7 +109,7 @@ describe RootedTree::Vertex do
     
     it 'returns the parent at a child' do
       root << child
-      assert_equal root, child.parent
+      assert_same root, child.parent
     end
   end
   
@@ -119,10 +119,10 @@ describe RootedTree::Vertex do
       
       child_a.append_sibling child_b
       
-      assert_equal child_a, child_b.prev
-      assert_equal child_b, child_a.next
-      assert_equal root, child_b.parent
-      assert_equal child_b, root.last_child
+      assert_same child_a, child_b.prev
+      assert_same child_b, child_a.next
+      assert_same root, child_b.parent
+      assert_same child_b, root.last_child
     end
     
     it 'inserts a sibbling between two vertecies' do
@@ -130,9 +130,9 @@ describe RootedTree::Vertex do
       
       child_a.append_sibling child_b
       
-      assert_equal child_b, child_c.prev
-      assert_equal child_c, child_b.next
-      assert_equal child_c, root.last_child
+      assert_same child_b, child_c.prev
+      assert_same child_c, child_b.next
+      assert_same child_c, root.last_child
     end
     
     it 'raises an exception when adding siblings to root vertecies' do
@@ -147,10 +147,10 @@ describe RootedTree::Vertex do
       
       child_b.prepend_sibling child_a
       
-      assert_equal child_a, child_b.prev
-      assert_equal child_b, child_a.next
-      assert_equal root, child_a.parent
-      assert_equal child_a, root.first_child
+      assert_same child_a, child_b.prev
+      assert_same child_b, child_a.next
+      assert_same root, child_a.parent
+      assert_same child_a, root.first_child
     end
     
     it 'inserts a sibbling between two vertecies' do
@@ -158,9 +158,9 @@ describe RootedTree::Vertex do
       
       child_c.prepend_sibling child_b
           
-      assert_equal child_a, child_b.prev
-      assert_equal child_b, child_a.next
-      assert_equal child_a, root.first_child
+      assert_same child_a, child_b.prev
+      assert_same child_b, child_a.next
+      assert_same child_a, root.first_child
     end
     
     it 'raises an exception when adding siblings to root vertecies' do
@@ -173,19 +173,19 @@ describe RootedTree::Vertex do
     it 'inserts a child under a childless root' do
       root.append_child child
       
-      assert_equal child, root.first_child
-      assert_equal child, root.last_child
-      assert_equal root, child.parent
+      assert_same child, root.first_child
+      assert_same child, root.last_child
+      assert_same root, child.parent
     end
     
     it 'inserts a child after the other children' do
       root.append_child child_a
       root.append_child child_b
       
-      assert_equal child_a, root.first_child
-      assert_equal child_b, root.last_child
-      assert_equal child_b, child_a.next
-      assert_equal child_a, child_b.prev
+      assert_same child_a, root.first_child
+      assert_same child_b, root.last_child
+      assert_same child_b, child_a.next
+      assert_same child_a, child_b.prev
     end
   end
   
@@ -193,19 +193,97 @@ describe RootedTree::Vertex do
     it 'inserts a child under a childless root' do
       root.prepend_child child
       
-      assert_equal child, root.first_child
-      assert_equal child, root.last_child
-      assert_equal root, child.parent
+      assert_same child, root.first_child
+      assert_same child, root.last_child
+      assert_same root, child.parent
     end
     
     it 'inserts a child before the other children' do
       root.prepend_child child_b
       root.prepend_child child_a
       
-      assert_equal child_a, root.first_child
-      assert_equal child_b, root.last_child
-      assert_equal child_b, child_a.next
-      assert_equal child_a, child_b.prev
+      assert_same child_a, root.first_child
+      assert_same child_b, root.last_child
+      assert_same child_b, child_a.next
+      assert_same child_a, child_b.prev
+    end
+  end
+  
+  describe '#subtree!' do
+    it 'extracts the subtree from the larger structure' do
+      root << (child_a << child_b) << child_c
+      
+      subtree = child_a.subtree!
+      
+      assert subtree.root?
+      assert_same child_b, subtree.children.next
+      
+      assert_same child_c, root.children.next
+      assert_raises(StopIteration) { child_c.prev }
+    end
+  end
+  
+  describe '#delete' do
+    it 'removes the middle child vertex from the tree' do
+      root << child_a << child_b << child_c
+      child_b.delete
+      
+      assert_same child_c, child_a.next
+      assert_same child_a, child_c.prev
+      assert child_b.root?
+    end
+    
+    it 'removes the first child vertex from the tree' do
+      root << child_a << child_b << child_c
+      child_a.delete
+      
+      assert child_b.first?
+      assert_same child_b, root.children.next
+    end
+    
+    it 'removes the last child vertex from the tree' do
+      root << child_a << child_b << child_c
+      child_c.delete
+      
+      assert child_b.last?
+      assert_same child_b, root.children(rtl: true).next
+    end
+    
+    it 'returns an empty array when deleting leafs' do
+      root << child_a
+      assert_equal [], child_a.delete
+      assert root.leaf?
+    end
+    
+    it 'returns the children as subtrees' do
+      root << child_a << child_b << child_c
+      subtrees = root.delete
+      assert_equal [child_a, child_b, child_c], subtrees
+      assert child_a.root? && child_b.root? && child_c.root?
+    end
+  end
+  
+  describe '#dup' do
+    it 'duplicates the entire subtree' do
+      root << (child_a << child_b) << child_c
+      root_dup = root.dup
+      
+      refute_same root, root_dup
+      
+      enum, enum_dup = root.each, root_dup.each
+      
+      loop { refute_same enum.next, enum_dup.next }
+      assert_raises(StopIteration) { enum.next }
+      
+      root_dup.children { |v| assert_same root_dup, v.parent }
+    end
+    
+    it 'creates a separate subtree' do
+      root << (child_a << child_b) << child_c
+      child_a_dup = child_a.dup
+      
+      refute child_a.root?
+      assert child_a_dup.root?
     end
   end
   
@@ -222,8 +300,8 @@ describe RootedTree::Vertex do
       root << (child_a << child_b)
       enum = child_b.ancestors
       
-      assert_equal child_a, enum.next
-      assert_equal root, enum.next
+      assert_same child_a, enum.next
+      assert_same root, enum.next
       assert_raises(StopIteration) { enum.next }
     end
   end
@@ -241,8 +319,8 @@ describe RootedTree::Vertex do
       root << child_a << child_b
       enum = root.children
       
-      assert_equal child_a, enum.next
-      assert_equal child_b, enum.next
+      assert_same child_a, enum.next
+      assert_same child_b, enum.next
       assert_raises(StopIteration) { enum.next }
     end
     
@@ -250,8 +328,8 @@ describe RootedTree::Vertex do
       root << child_a << child_b
       enum = root.children rtl: true
       
-      assert_equal child_b, enum.next
-      assert_equal child_a, enum.next
+      assert_same child_b, enum.next
+      assert_same child_a, enum.next
       assert_raises(StopIteration) { enum.next }
     end
   end
@@ -263,7 +341,7 @@ describe RootedTree::Vertex do
     
     it 'iterates over the vertex itself for a leaf' do
       enum = root.each
-      assert_equal root, enum.next
+      assert_same root, enum.next
       assert_raises(StopIteration) { enum.next }
     end
     
@@ -271,10 +349,10 @@ describe RootedTree::Vertex do
       root << (child_a << child_c) << child_b
       enum = root.each
       
-      assert_equal root, enum.next
-      assert_equal child_a, enum.next
-      assert_equal child_c, enum.next
-      assert_equal child_b, enum.next
+      assert_same root, enum.next
+      assert_same child_a, enum.next
+      assert_same child_c, enum.next
+      assert_same child_b, enum.next
       assert_raises(StopIteration) { enum.next }
     end
   end
@@ -286,7 +364,7 @@ describe RootedTree::Vertex do
     
     it 'iterates over the vertex itself for a leaf' do
       enum = root.leafs
-      assert_equal root, enum.next
+      assert_same root, enum.next
       assert_raises(StopIteration) { enum.next }
     end
     
@@ -294,8 +372,8 @@ describe RootedTree::Vertex do
       root << (child_a << child_c) << child_b
       enum = root.leafs
       
-      assert_equal child_c, enum.next
-      assert_equal child_b, enum.next
+      assert_same child_c, enum.next
+      assert_same child_b, enum.next
       assert_raises(StopIteration) { enum.next }
     end
     
@@ -303,8 +381,8 @@ describe RootedTree::Vertex do
       root << (child_a << child_c) << child_b
       enum = root.leafs rtl: true
       
-      assert_equal child_b, enum.next
-      assert_equal child_c, enum.next
+      assert_same child_b, enum.next
+      assert_same child_c, enum.next
       assert_raises(StopIteration) { enum.next }
     end
   end
@@ -323,6 +401,26 @@ describe RootedTree::Vertex do
       assert_equal [root, child_b], enum.next
       
       assert_raises(StopIteration) { enum.next }
+    end
+  end
+  
+  describe '#==' do
+    it 'returns true for leafs' do
+      assert_equal child_a, child_b
+    end
+    
+    it 'returns true for vertecies with identical subtrees' do
+      root << (child_a << subject.new << subject.new)
+      child_b << subject.new << subject.new
+      
+      assert_equal child_a, child_b
+    end
+    
+    it 'returns false for vertecies with different subtrees' do
+      root << (child_a << subject.new)
+      child_b << (subject.new << subject.new)
+      
+      refute_equal child_a, child_b
     end
   end
   
