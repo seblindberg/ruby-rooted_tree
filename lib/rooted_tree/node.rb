@@ -1,4 +1,4 @@
-# Vertex
+# Node
 #
 #
 # The following is an example of a rooted tree of height 3.
@@ -6,7 +6,7 @@
 #       r         - r, a, b, c, and d are internal vertices
 #    ┌──┼───┐     - vertices e, f, g, h, i, and j are leaves
 #    a  b   c     - vertices g, h, and i are siblings
-#   ┌┴┐ │ ┌─┼─┐   - vertex a is an ancestor of j
+#   ┌┴┐ │ ┌─┼─┐   - node a is an ancestor of j
 #   d e f g h i   - j is a descendant of a
 #   │
 #   j
@@ -15,7 +15,7 @@
 # http://www.cs.columbia.edu/~cs4203/files/GT-Lec4.pdf.
 
 module RootedTree
-  class Vertex
+  class Node
     attr_accessor :first_child, :last_child
     attr_writer :next, :prev, :parent
     protected :next=, :prev=, :parent=, :first_child=, :last_child=
@@ -40,7 +40,7 @@ module RootedTree
     
     # Leaf?
     #
-    # A vertex is a leaf if it has no children.
+    # A node is a leaf if it has no children.
     
     def leaf?
       @first_child.nil?
@@ -48,7 +48,7 @@ module RootedTree
     
     # Internal?
     #
-    # Returns true if the vertex is internal, which is equivalent to it having
+    # Returns true if the node is internal, which is equivalent to it having
     # children.
     
     def internal?
@@ -57,7 +57,7 @@ module RootedTree
     
     # Root?
     #
-    # Returns true if vertex has no parent.
+    # Returns true if node has no parent.
     
     def root?
       @parent.nil?
@@ -68,15 +68,14 @@ module RootedTree
     # Returns the root of the tree.
     
     def root
-      vertex = self
-      loop do
-        vertex = vertex.parent
-      end
+      node = self
+      loop { node = node.parent }
+      node
     end
     
     # First?
     #
-    # Returns true if this vertex is the first of its siblings.
+    # Returns true if this node is the first of its siblings.
     
     def first?
       @prev.nil?
@@ -84,7 +83,7 @@ module RootedTree
     
     # Last?
     #
-    # Returns true if this vertex is the last of its siblings.
+    # Returns true if this node is the last of its siblings.
     
     def last?
       @next.nil?
@@ -92,7 +91,7 @@ module RootedTree
     
     # Depth
     #
-    # Returns the depth of the vertex within the tree
+    # Returns the depth of the node within the tree
     
     def depth
       ancestors.count
@@ -118,7 +117,7 @@ module RootedTree
     
     # Next
     #
-    # Access the next sibling. Raises a StopIteration if this vertex is the last
+    # Access the next sibling. Raises a StopIteration if this node is the last
     # one.
     
     def next
@@ -128,7 +127,7 @@ module RootedTree
     
     # Prev(ious)
     #
-    # Access the previous sibling. Raises a StopIteration if this vertex is the
+    # Access the previous sibling. Raises a StopIteration if this node is the
     # first one.
     
     def prev
@@ -140,7 +139,7 @@ module RootedTree
     
     # Parent
     #
-    # Access the parent vertex. Raises a StopIteration if this vertex is the
+    # Access the parent node. Raises a StopIteration if this node is the
     # root.
     
     def parent
@@ -150,38 +149,38 @@ module RootedTree
     
     # Append Sibling
     #
-    # Insert a child between this vertex and the one after it.
+    # Insert a child between this node and the one after it.
     
-    def append_sibling vertex
+    def append_sibling node
       raise StructureException, 'Root node can not have siblings' if root?
       
-      vertex.next = @next
-      vertex.prev = self
-      vertex.parent = @parent
+      node.next = @next
+      node.prev = self
+      node.parent = @parent
       if @next
-        @next.prev = vertex
+        @next.prev = node
       else
-        @parent.last_child = vertex
+        @parent.last_child = node
       end
-      @next = vertex
+      @next = node
     end
     
     # Prepend Sibling
     #
-    # Insert a child between this vertex and the one before it.
+    # Insert a child between this node and the one before it.
     
-    def prepend_sibling vertex
+    def prepend_sibling node
       raise StructureException, 'Root node can not have siblings' if root?
       
-      vertex.next = self
-      vertex.prev = @prev
-      vertex.parent = @parent
+      node.next = self
+      node.prev = @prev
+      node.parent = @parent
       if @prev
-        @prev.next = vertex
+        @prev.next = node
       else
-        @parent.first_child = vertex
+        @parent.first_child = node
       end
-      @prev = vertex
+      @prev = node
     end
     
     # Append Child
@@ -218,7 +217,7 @@ module RootedTree
     
     # Subtree!
     #
-    # Extracts the vertex and its subtree from the larger structure.
+    # Extracts the node and its subtree from the larger structure.
     
     def subtree!
       return self if root?
@@ -244,7 +243,7 @@ module RootedTree
     
     # Delete
     #
-    # Removes the vertex from the tree.
+    # Removes the node from the tree.
     
     def delete
       subtree!.children.map{ |v| v.parent = nil; v }
@@ -252,23 +251,23 @@ module RootedTree
     
     # Ancestors
     #
-    # Returns an enumerator that will iterate over the parents of this vertex
+    # Returns an enumerator that will iterate over the parents of this node
     # until the root is reached.
     #
     # If a block is given it will be yielded to.
     
     def ancestors
       return to_enum(__callee__) unless block_given?
-      vertex = self
+      node = self
       loop do
-        vertex = vertex.parent
-        yield vertex
+        node = node.parent
+        yield node
       end
     end
     
     # Children
     #
-    # Returns an enumerator that will iterate over each of the vertex children.
+    # Returns an enumerator that will iterate over each of the node children.
     # The default order is left-to-right, but by passing rtl: true the order can
     # be reversed.
     #
@@ -329,26 +328,26 @@ module RootedTree
     # Add two roots together to create a larger tree. A new common root will be
     # created and returned.
     
-    def + vertex
-      unless root? && vertex.root?
+    def + node
+      unless root? && node.root?
         raise StructureException, 'Only roots can be added'
       end
       
       root = self.class.new
-      root << self << vertex
+      root << self << node
     end
     
     # Equality
     #
     # Returns true if the two vertecies form identical subtrees
     
-    def == vertex
-      return vertex.leaf? if leaf?
+    def == node
+      return node.leaf? if leaf?
       
-      vertex_children = vertex.children
+      node_children = node.children
       
       children.all? do |v|
-        v == vertex_children.next
+        v == node_children.next
       end
     rescue StopIteration
       false
@@ -360,16 +359,16 @@ module RootedTree
     # An example of the output can be seen below. Note that the output string
     # contains unicode characters.
     #
-    #   Vertex:0x3ffd64c22abc
-    #   ├─╴Vertex:0x3ffd64c1fd30
-    #   │  ├─╴Vertex:0x3ffd64c1f86c
-    #   │  └─╴Vertex:0x3ffd64c1f63c
+    #   Node:0x3ffd64c22abc
+    #   ├─╴Node:0x3ffd64c1fd30
+    #   │  ├─╴Node:0x3ffd64c1f86c
+    #   │  └─╴Node:0x3ffd64c1f63c
     #   └─╴Entety:0x3ffd64c1f40c
     #
     # By passing `as_array: true` the method will instead return an array
     # containing each of the output lines. The method also accepts a block
-    # which, if given, will be yielded to once for every vertex, and the output
-    # will be used as vertex labels instead of the default identifier.
+    # which, if given, will be yielded to once for every node, and the output
+    # will be used as node labels instead of the default identifier.
 
     def inspect as_array: false, &block
       unless block_given?

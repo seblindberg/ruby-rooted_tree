@@ -1,7 +1,7 @@
 require 'test_helper'
 
-describe RootedTree::Vertex do
-  subject { RootedTree::Vertex }
+describe RootedTree::Node do
+  subject { RootedTree::Node }
   
 
   let(:root) { subject.new }
@@ -46,7 +46,7 @@ describe RootedTree::Vertex do
   end
   
   describe '#root' do
-    it 'returns the vertex itself if it is a root' do
+    it 'returns the node itself if it is a root' do
       assert_same root, root.root
     end
     
@@ -124,7 +124,7 @@ describe RootedTree::Vertex do
       assert_raises(StopIteration) { root.next }
     end
     
-    it 'returns the next vertex' do
+    it 'returns the next node' do
       root << child_a << child_b
       
       assert_same child_b, child_a.next
@@ -141,7 +141,7 @@ describe RootedTree::Vertex do
       assert_raises(StopIteration) { root.prev }
     end
     
-    it 'returns the previous vertex' do
+    it 'returns the previous node' do
       root << child_a << child_b
       assert_same child_a, child_b.prev
     end
@@ -164,7 +164,7 @@ describe RootedTree::Vertex do
   end
   
   describe '#append_sibling' do
-    it 'inserts a sibbling after a vertex' do
+    it 'inserts a sibbling after a node' do
       root << child_a
       
       child_a.append_sibling child_b
@@ -192,7 +192,7 @@ describe RootedTree::Vertex do
   end
   
   describe '#prepend_sibling' do
-    it 'inserts a sibbling before a vertex' do
+    it 'inserts a sibbling before a node' do
       root << child_b
       
       child_b.prepend_sibling child_a
@@ -274,7 +274,7 @@ describe RootedTree::Vertex do
   end
   
   describe '#delete' do
-    it 'removes the middle child vertex from the tree' do
+    it 'removes the middle child node from the tree' do
       root << child_a << child_b << child_c
       child_b.delete
       
@@ -283,7 +283,7 @@ describe RootedTree::Vertex do
       assert child_b.root?
     end
     
-    it 'removes the first child vertex from the tree' do
+    it 'removes the first child node from the tree' do
       root << child_a << child_b << child_c
       child_a.delete
       
@@ -291,7 +291,7 @@ describe RootedTree::Vertex do
       assert_same child_b, root.children.next
     end
     
-    it 'removes the last child vertex from the tree' do
+    it 'removes the last child node from the tree' do
       root << child_a << child_b << child_c
       child_c.delete
       
@@ -389,7 +389,7 @@ describe RootedTree::Vertex do
       assert_kind_of Enumerator, root.each
     end
     
-    it 'iterates over the vertex itself for a leaf' do
+    it 'iterates over the node itself for a leaf' do
       enum = root.each
       assert_same root, enum.next
       assert_raises(StopIteration) { enum.next }
@@ -412,7 +412,7 @@ describe RootedTree::Vertex do
       assert_kind_of Enumerator, root.leafs
     end
     
-    it 'iterates over the vertex itself for a leaf' do
+    it 'iterates over the node itself for a leaf' do
       enum = root.leafs
       assert_same root, enum.next
       assert_raises(StopIteration) { enum.next }
