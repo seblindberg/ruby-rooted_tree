@@ -1,5 +1,10 @@
 # RootedTree
 
+[![Gem Version](https://badge.fury.io/rb/richtext.png)](http://badge.fury.io/rb/rooted_tree)
+[![Build Status](https://travis-ci.org/seblindberg/ruby-rooted_tree.svg?branch=master)](https://travis-ci.org/seblindberg/ruby-rooted_tree)
+[![Coverage Status](https://coveralls.io/repos/github/seblindberg/ruby-rooted_tree/badge.svg?branch=master)](https://coveralls.io/github/seblindberg/ruby-rooted_tree?branch=master)
+
+
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/rooted_tree`. To experiment with that code, run `bin/console` for an interactive prompt.
 
 TODO: Delete this and the text above, and describe your gem
