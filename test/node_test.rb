@@ -510,6 +510,11 @@ describe RootedTree::Node do
   end
 
   describe '#inspect' do
+    it 'includes the class name and object id by default' do
+      res = root.inspect
+      assert_equal format('%s:0x%0x', subject.name, root.object_id), res
+    end
+    
     it 'accepts a block for labeling' do
       root << child_a << child_b
       child_a << child_c
