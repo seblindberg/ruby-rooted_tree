@@ -45,6 +45,17 @@ describe RootedTree::Vertex do
     end
   end
   
+  describe '#root' do
+    it 'returns the vertex itself if it is a root' do
+      assert_same root, root.root
+    end
+    
+    it 'returns the root of the tree' do
+      root << child
+      assert_same root, child.root
+    end
+  end
+  
   describe '#first?' do
     it 'returns true for the first child' do
       root << child
@@ -66,6 +77,45 @@ describe RootedTree::Vertex do
     it 'returns false for a child that is not last' do
       root << child << subject.new
       refute child.last?
+    end
+  end
+  
+  describe '#depth' do
+    it 'returns 0 for the root' do
+      assert_equal 0, root.depth
+    end
+    
+    it 'returns 1 for children to the root' do
+      root << child
+      assert_equal 1, child.depth
+    end
+    
+    it 'returns the correct depth' do
+      root << (child_a << (child_b << child_c))
+      assert_equal 3, child_c.depth
+    end
+  end
+  
+  describe '#degree' do
+    it 'reports 0 for leafs' do
+      assert child.leaf?
+      assert_equal 0, child.degree
+    end
+    
+    it 'returns the number of children' do
+      root << child_a << (child_b << child_c)
+      assert_equal 2, root.degree
+    end
+  end
+  
+  describe '#size' do
+    it 'returns 1 for leafs' do
+      assert_equal 1, root.size
+    end
+    
+    it 'returns the size of the subtree' do
+      root << child_a << (child_b << child_c)
+      assert_equal 4, root.size
     end
   end
   
@@ -421,6 +471,20 @@ describe RootedTree::Vertex do
       child_b << (subject.new << subject.new)
       
       refute_equal child_a, child_b
+    end
+  end
+  
+  describe '#+' do
+    it 'adds two trees together under a new root' do
+      parent = child_a + child_b
+      enum = parent.children
+      assert_same child_a, enum.next
+      assert_same child_b, enum.next
+    end
+    
+    it 'fails to add vertecies that are not roots' do
+      root << child_a
+      assert_raises(RootedTree::StructureException) { child_a + child_b }
     end
   end
   

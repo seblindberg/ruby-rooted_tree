@@ -63,6 +63,17 @@ module RootedTree
       @parent.nil?
     end
     
+    # Root
+    #
+    # Returns the root of the tree.
+    
+    def root
+      vertex = self
+      loop do
+        vertex = vertex.parent
+      end
+    end
+    
     # First?
     #
     # Returns true if this vertex is the first of its siblings.
@@ -77,6 +88,32 @@ module RootedTree
     
     def last?
       @next.nil?
+    end
+    
+    # Depth
+    #
+    # Returns the depth of the vertex within the tree
+    
+    def depth
+      ancestors.count
+    end
+    
+    alias :level :depth
+    
+    # Degree
+    #
+    # Returns the number of children.
+    
+    def degree
+      children.count
+    end
+    
+    # Size
+    #
+    # Calculate the size in vertecies of the subtree.
+    
+    def size
+      children.reduce(1) { |s,v| s + v.size }
     end
     
     # Next
@@ -287,8 +324,18 @@ module RootedTree
       end
     end
     
+    # Add
+    #
+    # Add two roots together to create a larger tree. A new common root will be
+    # created and returned.
+    
     def + vertex
+      unless root? && vertex.root?
+        raise StructureException, 'Only roots can be added'
+      end
       
+      root = self.class.new
+      root << self << vertex
     end
     
     # Equality
