@@ -2,8 +2,9 @@ module RootedTree
   class Tree
     attr_reader :root
     
-    def initialize(node = Node.new)
+    def initialize(node)
       @root = node.root
+      @root.freeze
     end
     
     # Degree

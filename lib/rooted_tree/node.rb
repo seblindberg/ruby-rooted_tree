@@ -38,6 +38,11 @@ module RootedTree
       @first_child = duped_children.first
       @last_child = duped_children.last
     end
+    
+    def freeze
+      super
+      children.each(&:freeze)
+    end
 
     # Leaf?
     #
@@ -351,13 +356,22 @@ module RootedTree
       children.to_a == other.children.to_a
     end
     
+    # Tree!
+    #
+    # Wraps the entire tree in a Tree object. The operation will freeze the node
+    # structure, making it immutable. If this node is a child the root will be
+    # found and passed to Tree.new.
+    
+    def tree!
+      Tree.new root
+    end
+    
     # Tree
     #
-    # Wraps the entire tree in a Tree object If this node is a child the root
-    # will be found and passed to Tree.new.
+    # Duplicates the entire tree and calls #tree! on the copy.
     
     def tree
-      Tree.new root
+      root.dup.tree!
     end
     
     # Subtree!

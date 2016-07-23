@@ -8,6 +8,19 @@ describe RootedTree::Node do
   let(:child_a) { subject.new }
   let(:child_b) { subject.new }
   let(:child_c) { subject.new }
+  
+  describe '#freeze' do
+    it 'makes the node immutable' do
+      root.freeze
+      assert_raises(RuntimeError) { root << child }
+    end
+     
+    it 'freezes the children' do
+      root << child
+      root.freeze
+      assert child.frozen?
+    end
+  end
 
   describe '#leaf?' do
     it 'returns true for leaf nodes' do
@@ -513,17 +526,30 @@ describe RootedTree::Node do
     end
   end
   
-  describe '#tree' do
-    it 'wraps the root node in a Tree' do
-      tree = root.tree
+  describe '#tree!' do
+    it 'wraps the root node in a Tree and freezes it' do
+      tree = root.tree!
+      
       assert_kind_of RootedTree::Tree, tree
       assert_same root, tree.root
+      assert root.frozen?
     end
-
+  
     it 'always wraps the whole tree' do
       root << child
-      tree = child.tree
+      tree = child.tree!
       assert_same root, tree.root
+    end
+  end
+  
+  describe '#tree' do
+    it 'wraps an immutable copy of the root node in a Tree' do
+      tree = root.tree
+      
+      assert_kind_of RootedTree::Tree, tree
+      assert_equal root, tree.root
+      refute_same root, tree.root
+      assert tree.root.frozen?
     end
   end
 
