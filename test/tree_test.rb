@@ -21,7 +21,7 @@ describe RootedTree::Tree do
     
     it 'freezes the node structure' do
       root_node << child_node
-      tree = subject.new root_node
+      subject.new root_node
       assert root_node.frozen?
       assert child_node.frozen?
     end

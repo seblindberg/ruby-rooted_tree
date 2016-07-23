@@ -18,9 +18,12 @@
 
 module RootedTree
   class Node
-    attr_accessor :first_child, :last_child
+    include Enumerable
+    
+    attr_accessor :first_child, :last_child, :degree
     attr_writer :next, :prev, :parent
-    protected :next=, :prev=, :parent=, :first_child=, :last_child=
+    
+    protected :next=, :prev=, :parent=, :first_child=, :last_child=, :degree=
 
     def initialize
       @parent = nil
@@ -28,6 +31,7 @@ module RootedTree
       @prev = nil
       @first_child = nil
       @last_child = nil
+      @degree = 0
     end
 
     def initialize_copy(*)
@@ -43,6 +47,8 @@ module RootedTree
       super
       children.each(&:freeze)
     end
+    
+    alias arity degree
 
     # Leaf?
     #
@@ -107,16 +113,6 @@ module RootedTree
 
     alias level depth
 
-    # Degree
-    #
-    # Returns the number of children of the node.
-
-    def degree
-      children.count
-    end
-    
-    alias arity degree
-
     # Size
     #
     # Calculate the size in vertecies of the subtree.
@@ -167,6 +163,8 @@ module RootedTree
       node.next = @next
       node.prev = self
       node.parent = @parent
+      @parent.degree += 1
+      
       if @next
         @next.prev = node
       else
@@ -185,6 +183,8 @@ module RootedTree
       node.next = self
       node.prev = @prev
       node.parent = @parent
+      @parent.degree += 1
+      
       if @prev
         @prev.next = node
       else
@@ -201,6 +201,7 @@ module RootedTree
       if leaf?
         @first_child = @last_child = child
         child.next = child.prev = nil
+        @degree = 1
         child.parent = self
       else
         @last_child.append_sibling child
@@ -216,6 +217,7 @@ module RootedTree
       if leaf?
         @first_child = @last_child = child
         child.next = child.prev = nil
+        @degree = 1
         child.parent = self
       else
         @first_child.prepend_sibling child
@@ -243,6 +245,7 @@ module RootedTree
         @prev.next = @next
       end
 
+      @parent.degree -= 1
       @prev = @next = @parent = nil
       self
     end
@@ -351,7 +354,7 @@ module RootedTree
 
     def ==(other)
       return false unless other.is_a? self.class
-      return other.leaf? if leaf?
+      return false unless degree == other.degree
 
       children.to_a == other.children.to_a
     end
