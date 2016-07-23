@@ -69,6 +69,8 @@ module RootedTree
     # Returns the root of the tree.
 
     def root
+      return self if root?
+      
       node = self
       loop { node = node.parent }
       node
@@ -217,11 +219,11 @@ module RootedTree
 
     alias << append_child
 
-    # Subtree!
+    # Extract
     #
     # Extracts the node and its subtree from the larger structure.
 
-    def subtree!
+    def extract
       return self if root?
 
       if last?
@@ -240,14 +242,12 @@ module RootedTree
       self
     end
 
-    alias subtree dup
-
     # Delete
     #
     # Removes the node from the tree.
 
     def delete
-      subtree!.children.map do |child|
+      extract.children.map do |child|
         child.parent = nil
         child
       end
@@ -349,6 +349,31 @@ module RootedTree
       return other.leaf? if leaf?
 
       children.to_a == other.children.to_a
+    end
+    
+    # Tree
+    #
+    # Wraps the entire tree in a Tree object If this node is a child the root
+    # will be found and passed to Tree.new.
+    
+    def tree
+      Tree.new root
+    end
+    
+    # Subtree!
+    #
+    # Extracts this node from the larger tree and wraps it in a Tree object.
+    
+    def subtree!
+      Tree.new extract
+    end
+    
+    # Subtree
+    #
+    # Duplicates this node and its descendants and wraps them in a Tree object.
+    
+    def subtree
+      Tree.new dup
     end
 
     # Inspect

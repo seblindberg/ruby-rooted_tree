@@ -264,11 +264,11 @@ describe RootedTree::Node do
     end
   end
 
-  describe '#subtree!' do
-    it 'extracts the subtree from the larger structure' do
+  describe '#extract' do
+    it 'extracts the node from the larger structure' do
       root << (child_a << child_b) << child_c
 
-      subtree = child_a.subtree!
+      subtree = child_a.extract
 
       assert subtree.root?
       assert_same child_b, subtree.children.next
@@ -510,6 +510,50 @@ describe RootedTree::Node do
     it 'fails to add nodes that are not roots' do
       root << child_a
       assert_raises(RootedTree::StructureException) { child_a + child_b }
+    end
+  end
+  
+  describe '#tree' do
+    it 'wraps the root node in a Tree' do
+      tree = root.tree
+      assert_kind_of RootedTree::Tree, tree
+      assert_same root, tree.root
+    end
+
+    it 'always wraps the whole tree' do
+      root << child
+      tree = child.tree
+      assert_same root, tree.root
+    end
+  end
+
+  describe '#subtree!' do
+    it 'returns the entire tree when called on the root' do
+      root << child
+      tree = root.subtree!
+      assert_kind_of RootedTree::Tree, tree
+      assert_same root, tree.root
+    end
+    
+    it 'destructivly extracts the child node and its children' do
+      root << child_a << (child_b << child_c)
+      tree = child_b.subtree!
+      
+      assert_kind_of RootedTree::Tree, tree
+      assert_same child_b, tree.root
+      assert_equal 1, root.degree
+    end
+  end
+  
+  describe '#subtree' do
+    it 'it preserves the original tree' do
+      root << child_a << (child_b << child_c)
+      tree = child_b.subtree
+      
+      assert_kind_of RootedTree::Tree, tree
+      refute_same child_b, tree.root
+      assert_equal child_b, tree.root
+      assert_equal 2, root.degree
     end
   end
 
