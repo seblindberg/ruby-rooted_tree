@@ -192,6 +192,13 @@ module RootedTree
       end
       @prev = node
     end
+    
+    private def add_child_to_leaf(child)
+      @first_child = @last_child = child
+      child.next = child.prev = nil
+      @degree = 1
+      child.parent = self
+    end
 
     # Append Child
     #
@@ -199,10 +206,7 @@ module RootedTree
 
     def append_child(child)
       if leaf?
-        @first_child = @last_child = child
-        child.next = child.prev = nil
-        @degree = 1
-        child.parent = self
+        add_child_to_leaf child
       else
         @last_child.append_sibling child
       end
@@ -215,10 +219,7 @@ module RootedTree
 
     def prepend_child(child)
       if leaf?
-        @first_child = @last_child = child
-        child.next = child.prev = nil
-        @degree = 1
-        child.parent = self
+        add_child_to_leaf child
       else
         @first_child.prepend_sibling child
       end
@@ -279,11 +280,11 @@ module RootedTree
 
     # Children
     #
-    # Returns an enumerator that will iterate over each of the node children.
-    # The default order is left-to-right, but by passing rtl: true the order can
-    # be reversed.
+    # Yields to each of the node children. The default order is left-to-right,
+    # but by passing rtl: true the order can be reversed. If a block is not given an enumerator is returned.
     #
-    # If a block is given it will be yielded to.
+    # Note that the block will catch any StopIteration that is raised and
+    # terminate early, returning the value of the exception.
 
     def children(rtl: false)
       return to_enum(__callee__, rtl: rtl) unless block_given?
@@ -303,7 +304,8 @@ module RootedTree
 
     # Each
     #
-    #
+    # Yields first to self and then to each child. If a block is not given an
+    # enumerator is returned.
 
     def each(&block)
       return to_enum(__callee__) unless block_given?
