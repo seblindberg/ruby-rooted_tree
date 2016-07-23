@@ -54,7 +54,7 @@ module RootedTree
     # A node is a leaf if it has no children.
 
     def leaf?
-      @first_child.nil?
+      @degree == 0
     end
 
     # Internal?
