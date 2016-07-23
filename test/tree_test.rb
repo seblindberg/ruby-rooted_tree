@@ -27,6 +27,12 @@ describe RootedTree::Tree do
     end
   end
   
+  describe '#tree' do
+    it 'returns itself' do
+      assert_same tree, tree.tree
+    end
+  end
+  
   describe '#degree' do
     it 'returns 0 for single nodes' do
       tree = subject.new root_node
