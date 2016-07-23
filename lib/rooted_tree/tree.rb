@@ -7,6 +7,10 @@ module RootedTree
       @root.freeze
     end
     
+    def tree
+      self
+    end
+    
     # Degree
     #
     # Returns the maximum degree (number of children) in the tree.
