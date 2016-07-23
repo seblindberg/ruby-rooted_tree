@@ -116,6 +116,17 @@ module RootedTree
       children.reduce(1) { |a, e| a + e.size }
     end
 
+    # Airty
+    #
+    # Returns the maximum degree (number of children) in the subtree.
+
+    def arity
+      return 0 if leaf?
+
+      child_arity = children.map(&:arity)
+      child_arity.push(child_arity.length).max
+    end
+
     # Next
     #
     # Access the next sibling. Raises a StopIteration if this node is the last

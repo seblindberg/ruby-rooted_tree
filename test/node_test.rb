@@ -118,6 +118,30 @@ describe RootedTree::Node do
     end
   end
 
+  describe '#arity' do
+    it 'returns 0 for leafs' do
+      assert_equal 0, root.arity
+    end
+
+    it 'returns the arity when itself has the maximum number of children' do
+      child_a << subject.new << subject.new # 2
+      child_b << subject.new << subject.new # 2
+      child_c << subject.new # 1
+      root << child_a << child_b << child_c
+
+      assert_equal 3, root.arity
+    end
+
+    it 'returns the arity when a child has the maximum number of children' do
+      child_a << subject.new << subject.new << subject.new # 3
+      child_b << subject.new << subject.new << subject.new << subject.new # 4
+      child_c << subject.new << subject.new # 2
+      root << child_a << child_b << child_c
+
+      assert_equal 4, root.arity
+    end
+  end
+
   describe '#next' do
     it 'raises a StopIteration when there are no children' do
       assert_raises(StopIteration) { root.next }
@@ -514,7 +538,7 @@ describe RootedTree::Node do
       res = root.inspect
       assert_equal format('%s:0x%0x', subject.name, root.object_id), res
     end
-    
+
     it 'accepts a block for labeling' do
       root << child_a << child_b
       child_a << child_c
