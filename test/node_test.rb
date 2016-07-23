@@ -96,14 +96,18 @@ describe RootedTree::Node do
   end
 
   describe '#degree' do
-    it 'reports 0 for leafs' do
-      assert child.leaf?
-      assert_equal 0, child.degree
+    it 'returns 0 for single nodes' do
+      assert_equal 0, root.degree
     end
 
-    it 'returns the number of children' do
+    it 'returns the number of children for roots' do
       root << child_a << (child_b << child_c)
       assert_equal 2, root.degree
+    end
+    
+    it 'returns the number of children for internal nodes' do
+      root << (child_a << child_b << child_c)
+      assert_equal 2, child_a.degree
     end
   end
 
@@ -115,30 +119,6 @@ describe RootedTree::Node do
     it 'returns the size of the subtree' do
       root << child_a << (child_b << child_c)
       assert_equal 4, root.size
-    end
-  end
-
-  describe '#arity' do
-    it 'returns 0 for leafs' do
-      assert_equal 0, root.arity
-    end
-
-    it 'returns the arity when itself has the maximum number of children' do
-      child_a << subject.new << subject.new # 2
-      child_b << subject.new << subject.new # 2
-      child_c << subject.new # 1
-      root << child_a << child_b << child_c
-
-      assert_equal 3, root.arity
-    end
-
-    it 'returns the arity when a child has the maximum number of children' do
-      child_a << subject.new << subject.new << subject.new # 3
-      child_b << subject.new << subject.new << subject.new << subject.new # 4
-      child_c << subject.new << subject.new # 2
-      root << child_a << child_b << child_c
-
-      assert_equal 4, root.arity
     end
   end
 

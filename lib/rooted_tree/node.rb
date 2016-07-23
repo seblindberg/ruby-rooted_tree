@@ -102,11 +102,13 @@ module RootedTree
 
     # Degree
     #
-    # Returns the number of children.
+    # Returns the number of children of the node.
 
     def degree
       children.count
     end
+    
+    alias arity degree
 
     # Size
     #
@@ -114,17 +116,6 @@ module RootedTree
 
     def size
       children.reduce(1) { |a, e| a + e.size }
-    end
-
-    # Airty
-    #
-    # Returns the maximum degree (number of children) in the subtree.
-
-    def arity
-      return 0 if leaf?
-
-      child_arity = children.map(&:arity)
-      child_arity.push(child_arity.length).max
     end
 
     # Next
