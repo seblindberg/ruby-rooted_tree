@@ -9,6 +9,24 @@ describe RootedTree::Node do
   let(:child_b) { subject.new }
   let(:child_c) { subject.new }
   
+  describe '.new' do
+    it 'accepts no arguments' do
+      assert_silent { subject.new }
+    end
+    
+    it 'accepts a value' do
+      node = subject.new :value
+      assert_equal :value, node.value
+    end
+  end
+
+  describe '#value' do
+    it 'stores a value' do
+      root.value = :value
+      assert_equal :value, root.value
+    end
+  end
+
   describe '#freeze' do
     it 'makes the node immutable' do
       root.freeze
@@ -19,6 +37,16 @@ describe RootedTree::Node do
       root << child
       root.freeze
       assert child.frozen?
+    end
+    
+    it 'freezes the value' do
+      root << child
+      root.value = 'root'
+      child.value = 'child'
+      root.freeze
+      
+      assert root.value.frozen?
+      assert child.value.frozen?
     end
   end
 

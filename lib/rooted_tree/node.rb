@@ -24,20 +24,21 @@ module RootedTree
   class Node
     include Enumerable
 
-    attr_accessor :first_child, :last_child, :degree
+    attr_accessor :first_child, :last_child, :degree, :value
     attr_writer :next, :prev, :parent
 
     protected :next=, :prev=, :parent=, :first_child=, :last_child=, :degree=
 
     alias arity degree
 
-    def initialize
+    def initialize value = nil
       @parent = nil
       @next = nil
       @prev = nil
       @first_child = nil
       @last_child = nil
       @degree = 0
+      @value = value
     end
 
     def initialize_copy(*)
@@ -51,6 +52,7 @@ module RootedTree
 
     def freeze
       super
+      @value.freeze
       children.each(&:freeze)
     end
 
