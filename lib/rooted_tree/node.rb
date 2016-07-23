@@ -2,7 +2,6 @@
 
 # Node
 #
-#
 # The following is an example of a rooted tree of height 3.
 #
 #       r         - r, a, b, c, and d are internal vertices
@@ -112,6 +111,24 @@ module RootedTree
     end
 
     alias level depth
+    
+    # Max Depth
+    #
+    # Returns the maximum node depth under this node.
+    
+    def max_depth offset = depth
+      return offset if leaf?
+      
+      children.map {|c| c.max_depth offset + 1 }.max
+    end
+
+    # Max Degree
+    #
+    # Returns the highest child count of the nodes in the subtree.
+
+    def max_degree
+      children.map(&:degree).push(degree).max
+    end
 
     # Size
     #

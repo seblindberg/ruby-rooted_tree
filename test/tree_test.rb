@@ -42,4 +42,11 @@ describe RootedTree::Tree do
       assert_equal 2, tree.degree
     end
   end
+  
+  describe '#depth' do
+    it 'returns the maximum node depth in the tree' do
+      root_node << (node_class.new << (node_class.new << node_class.new))
+      assert_equal 3, root_node.tree!.depth
+    end
+  end
 end

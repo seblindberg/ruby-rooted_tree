@@ -12,10 +12,15 @@ module RootedTree
     # Returns the maximum degree (number of children) in the tree.
     
     def degree
-      max_degree_node = root.each.max_by do |node|
-        node.degree
-      end
-      max_degree_node.degree
+      @degree ||= root.max_degree
+    end
+    
+    # Depth
+    #
+    # Returns the maximum depth of the tree.
+    
+    def depth
+      @depth ||= root.max_depth
     end
   end
 end
