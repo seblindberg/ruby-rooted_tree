@@ -402,6 +402,37 @@ describe RootedTree::Node do
       assert_raises(StopIteration) { enum.next }
     end
   end
+  
+  describe '#child' do
+    it 'returns the n:th child' do
+      root << child_a << child_b
+      
+      assert_same child_a, root.child(0)
+      assert_same child_b, root.child(1)
+    end
+    
+    it 'reverses the order with a negative argument' do
+      root << child_a << child_b
+      
+      assert_same child_b, root.child(-1)
+      assert_same child_a, root.child(-2)
+    end
+    
+    it 'raises a RangeError when index is out of range' do
+      root << child_a << child_b
+      assert_raises(RangeError) { root.child(2) }
+    end
+    
+    it 'allows for single child access' do
+      root << child
+      assert_same child, root.child
+    end
+    
+    it 'raises an ArgumentError with no argument for nodes with degree > 1' do
+      root << child_a << child_b
+      assert_raises(ArgumentError) { root.child }
+    end
+  end
 
   describe '#each' do
     it 'returns an enumerator' do

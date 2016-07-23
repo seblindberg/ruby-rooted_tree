@@ -23,12 +23,12 @@
 module RootedTree
   class Node
     include Enumerable
-    
+
     attr_accessor :first_child, :last_child, :degree
     attr_writer :next, :prev, :parent
-    
+
     protected :next=, :prev=, :parent=, :first_child=, :last_child=, :degree=
-    
+
     alias arity degree
 
     def initialize
@@ -48,7 +48,7 @@ module RootedTree
       @first_child = duped_children.first
       @last_child = duped_children.last
     end
-    
+
     def freeze
       super
       children.each(&:freeze)
@@ -85,7 +85,7 @@ module RootedTree
 
     def root
       return self if root?
-      
+
       node = self
       loop { node = node.parent }
       node
@@ -116,15 +116,15 @@ module RootedTree
     end
 
     alias level depth
-    
+
     # Max Depth
     #
     # Returns the maximum node depth under this node.
-    
-    def max_depth offset = depth
+
+    def max_depth(offset = depth)
       return offset if leaf?
-      
-      children.map {|c| c.max_depth offset + 1 }.max
+
+      children.map { |c| c.max_depth offset + 1 }.max
     end
 
     # Max Degree
@@ -186,7 +186,7 @@ module RootedTree
       node.prev = self
       node.parent = @parent
       @parent.degree += 1
-      
+
       if @next
         @next.prev = node
       else
@@ -206,7 +206,7 @@ module RootedTree
       node.prev = @prev
       node.parent = @parent
       @parent.degree += 1
-      
+
       if @prev
         @prev.next = node
       else
@@ -214,7 +214,7 @@ module RootedTree
       end
       @prev = node
     end
-    
+
     private def add_child_to_leaf(child)
       @first_child = @last_child = child
       child.next = child.prev = nil
@@ -303,7 +303,8 @@ module RootedTree
     # Children
     #
     # Yields to each of the node children. The default order is left-to-right,
-    # but by passing rtl: true the order can be reversed. If a block is not given an enumerator is returned.
+    # but by passing rtl: true the order can be reversed. If a block is not
+    # given an enumerator is returned.
     #
     # Note that the block will catch any StopIteration that is raised and
     # terminate early, returning the value of the exception.
@@ -321,6 +322,33 @@ module RootedTree
       loop do
         yield child
         child = child.send advance
+      end
+    end
+
+    # Child
+    #
+    # Accessor method for any of the n children under this node.
+
+    def child(n = nil)
+      if n.nil?
+        if @degree != 1
+          raise ArgumentError, 'No argument given for node with degree != 1'
+        end
+        return @first_child
+      end
+
+      rtl = if n < 0
+              n = -1 - n
+              true
+            else
+              false
+            end
+
+      raise RangeError, 'Child index out of range' if n >= @degree
+
+      children(rtl: rtl).each do |c|
+        break c if n == 0
+        n -= 1
       end
     end
 
@@ -382,37 +410,37 @@ module RootedTree
 
       children.to_a == other.children.to_a
     end
-    
+
     # Tree!
     #
     # Wraps the entire tree in a Tree object. The operation will freeze the node
     # structure, making it immutable. If this node is a child the root will be
     # found and passed to Tree.new.
-    
+
     def tree!
       Tree.new root
     end
-    
+
     # Tree
     #
     # Duplicates the entire tree and calls #tree! on the copy.
-    
+
     def tree
       root.dup.tree!
     end
-    
+
     # Subtree!
     #
     # Extracts this node from the larger tree and wraps it in a Tree object.
-    
+
     def subtree!
       Tree.new extract
     end
-    
+
     # Subtree
     #
     # Duplicates this node and its descendants and wraps them in a Tree object.
-    
+
     def subtree
       Tree.new dup
     end
