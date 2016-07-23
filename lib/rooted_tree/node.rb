@@ -2,7 +2,12 @@
 
 # Node
 #
-# The following is an example of a rooted tree of height 3.
+# Nodes are mutable by default, since creating anyting but simple leafs would
+# otherwise be imposible. Calling #freeze on a node makes the entire subtree
+# immutable. This is used by the Tree class which only operates on frozen node
+# structures.
+#
+# The following is an example of a rooted tree with maximum depth 2.
 #
 #       r         - r, a, b, c, and d are internal vertices
 #    +--+---+     - vertices e, f, g, h, i, and j are leaves
@@ -23,6 +28,8 @@ module RootedTree
     attr_writer :next, :prev, :parent
     
     protected :next=, :prev=, :parent=, :first_child=, :last_child=, :degree=
+    
+    alias arity degree
 
     def initialize
       @parent = nil
@@ -46,8 +53,6 @@ module RootedTree
       super
       children.each(&:freeze)
     end
-    
-    alias arity degree
 
     # Leaf?
     #
