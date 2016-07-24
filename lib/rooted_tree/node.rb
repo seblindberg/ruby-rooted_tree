@@ -31,6 +31,11 @@ module RootedTree
 
     alias arity degree
 
+    def self.[](value = nil)
+      return value if value.is_a? self
+      self.new value
+    end
+
     def initialize value = nil
       @parent = nil
       @next = nil
@@ -181,9 +186,10 @@ module RootedTree
     #
     # Insert a child between this node and the one after it.
 
-    def append_sibling(node)
+    def append_sibling(value = nil)
       raise StructureException, 'Root node can not have siblings' if root?
 
+      node = self.class[value]
       node.next = @next
       node.prev = self
       node.parent = @parent
@@ -201,9 +207,10 @@ module RootedTree
     #
     # Insert a child between this node and the one before it.
 
-    def prepend_sibling(node)
+    def prepend_sibling(value = nil)
       raise StructureException, 'Root node can not have siblings' if root?
 
+      node = self.class[value]
       node.next = self
       node.prev = @prev
       node.parent = @parent
@@ -217,39 +224,40 @@ module RootedTree
       @prev = node
     end
 
-    private def add_child_to_leaf(child)
-      @first_child = @last_child = child
-      child.next = child.prev = nil
+    private def add_child_to_leaf(value)
+      node = self.class[value]
+      @first_child = @last_child = node
+      node.next = node.prev = nil
       @degree = 1
-      child.parent = self
+      node.parent = self
     end
 
     # Append Child
     #
     # Insert a child after the last one.
 
-    def append_child(child)
+    def append_child(value = nil)
       if leaf?
-        add_child_to_leaf child
+        add_child_to_leaf value
       else
-        @last_child.append_sibling child
+        @last_child.append_sibling value
       end
       self
     end
+
+    alias << append_child
 
     # Prepend Child
     #
     # Insert a child before the first one.
 
-    def prepend_child(child)
+    def prepend_child(value = nil)
       if leaf?
-        add_child_to_leaf child
+        add_child_to_leaf value
       else
-        @first_child.prepend_sibling child
+        @first_child.prepend_sibling value
       end
     end
-
-    alias << append_child
 
     # Extract
     #

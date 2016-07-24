@@ -8,15 +8,29 @@ describe RootedTree::Node do
   let(:child_a) { subject.new }
   let(:child_b) { subject.new }
   let(:child_c) { subject.new }
-  
+
   describe '.new' do
     it 'accepts no arguments' do
       assert_silent { subject.new }
     end
-    
+
     it 'accepts a value' do
       node = subject.new :value
       assert_equal :value, node.value
+    end
+  end
+
+  describe '.[]' do
+    it 'accepts no arguments' do
+      assert_kind_of subject, subject[]
+    end
+
+    it 'does nothing when given a node' do
+      assert_same root, subject[root]
+    end
+
+    it 'wraps the argument in a node' do
+      assert_equal :value, subject[:value].value
     end
   end
 
@@ -32,19 +46,19 @@ describe RootedTree::Node do
       root.freeze
       assert_raises(RuntimeError) { root << child }
     end
-     
+
     it 'freezes the children' do
       root << child
       root.freeze
       assert child.frozen?
     end
-    
+
     it 'freezes the value' do
       root << child
       root.value = 'root'
       child.value = 'child'
       root.freeze
-      
+
       assert root.value.frozen?
       assert child.value.frozen?
     end
@@ -145,7 +159,7 @@ describe RootedTree::Node do
       root << child_a << (child_b << child_c)
       assert_equal 2, root.degree
     end
-    
+
     it 'returns the number of children for internal nodes' do
       root << (child_a << child_b << child_c)
       assert_equal 2, child_a.degree
@@ -234,6 +248,18 @@ describe RootedTree::Node do
         root.append_sibling subject.new
       end
     end
+
+    it 'creates a node when given no argument' do
+      root << child
+      child.append_sibling
+      assert_equal 2, root.degree
+    end
+
+    it 'wraps the argument in a node when given an object' do
+      root << child
+      child.append_sibling :value
+      assert_equal :value, child.next.value
+    end
   end
 
   describe '#prepend_sibling' do
@@ -263,6 +289,18 @@ describe RootedTree::Node do
         root.prepend_sibling subject.new
       end
     end
+
+    it 'creates a node when given no argument' do
+      root << child
+      child.prepend_sibling
+      assert_equal 2, root.degree
+    end
+
+    it 'wraps the argument in a node when given an object' do
+      root << child
+      child.prepend_sibling :value
+      assert_equal :value, child.prev.value
+    end
   end
 
   describe '#append_child' do
@@ -283,6 +321,16 @@ describe RootedTree::Node do
       assert_same child_b, child_a.next
       assert_same child_a, child_b.prev
     end
+
+    it 'creates a node when given no argument' do
+      root.append_child
+      assert_equal 1, root.degree
+    end
+
+    it 'wraps the argument in a node when given an object' do
+      root.append_child :value
+      assert_equal :value, root.child.value
+    end
   end
 
   describe '#prepend_child' do
@@ -302,6 +350,16 @@ describe RootedTree::Node do
       assert_same child_b, root.last_child
       assert_same child_b, child_a.next
       assert_same child_a, child_b.prev
+    end
+
+    it 'creates a node when given no argument' do
+      root.prepend_child
+      assert_equal 1, root.degree
+    end
+
+    it 'wraps the argument in a node when given an object' do
+      root.prepend_child :value
+      assert_equal :value, root.child.value
     end
   end
 
@@ -430,32 +488,32 @@ describe RootedTree::Node do
       assert_raises(StopIteration) { enum.next }
     end
   end
-  
+
   describe '#child' do
     it 'returns the n:th child' do
       root << child_a << child_b
-      
+
       assert_same child_a, root.child(0)
       assert_same child_b, root.child(1)
     end
-    
+
     it 'reverses the order with a negative argument' do
       root << child_a << child_b
-      
+
       assert_same child_b, root.child(-1)
       assert_same child_a, root.child(-2)
     end
-    
+
     it 'raises a RangeError when index is out of range' do
       root << child_a << child_b
       assert_raises(RangeError) { root.child(2) }
     end
-    
+
     it 'allows for single child access' do
       root << child
       assert_same child, root.child
     end
-    
+
     it 'raises an ArgumentError with no argument for nodes with degree > 1' do
       root << child_a << child_b
       assert_raises(ArgumentError) { root.child }
@@ -584,27 +642,27 @@ describe RootedTree::Node do
       assert_raises(RootedTree::StructureException) { child_a + child_b }
     end
   end
-  
+
   describe '#tree!' do
     it 'wraps the root node in a Tree and freezes it' do
       tree = root.tree!
-      
+
       assert_kind_of RootedTree::Tree, tree
       assert_same root, tree.root
       assert root.frozen?
     end
-  
+
     it 'always wraps the whole tree' do
       root << child
       tree = child.tree!
       assert_same root, tree.root
     end
   end
-  
+
   describe '#tree' do
     it 'wraps an immutable copy of the root node in a Tree' do
       tree = root.tree
-      
+
       assert_kind_of RootedTree::Tree, tree
       assert_equal root, tree.root
       refute_same root, tree.root
@@ -619,22 +677,22 @@ describe RootedTree::Node do
       assert_kind_of RootedTree::Tree, tree
       assert_same root, tree.root
     end
-    
+
     it 'destructivly extracts the child node and its children' do
       root << child_a << (child_b << child_c)
       tree = child_b.subtree!
-      
+
       assert_kind_of RootedTree::Tree, tree
       assert_same child_b, tree.root
       assert_equal 1, root.degree
     end
   end
-  
+
   describe '#subtree' do
     it 'it preserves the original tree' do
       root << child_a << (child_b << child_c)
       tree = child_b.subtree
-      
+
       assert_kind_of RootedTree::Tree, tree
       refute_same child_b, tree.root
       assert_equal child_b, tree.root
