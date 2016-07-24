@@ -53,22 +53,15 @@ The gem is primarily ment to be extended by other classes. The following example
 
 ```ruby
 class FileSystemItem < RootedTree::Node
-  attr_reader :name
-
-  def initialize name
-    super()
-    @name = name
-  end
-
   def display
-    inspect { |item| item.name }
+    inspect { |item| item.value }
   end
 
   def self.map_to_path path = '.', root: new(path)
     # Iterate over all of the files in the directory
     Dir[path + '/*'].each do |entry|
       # Create a new FileSystemItem for the entry
-      item = new File.basename entry
+      item = new File.basename(entry)
       root << item
       # Continue to map the files and directories under
       # entry, if it is a directory
