@@ -33,10 +33,10 @@ module RootedTree
 
     def self.[](value = nil)
       return value if value.is_a? self
-      self.new value
+      new value
     end
 
-    def initialize value = nil
+    def initialize(value = nil)
       @parent = nil
       @next = nil
       @prev = nil
@@ -406,7 +406,7 @@ module RootedTree
       unless root? && other.root?
         raise StructureException, 'Only roots can be added'
       end
-      
+
       a = frozen? ? dup : self
       b = other.frozen? ? other.dup : other
 
