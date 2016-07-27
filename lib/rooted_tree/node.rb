@@ -465,7 +465,7 @@ module RootedTree
     #   |--Node:0x3ffd64c1fd30
     #   |  |--Node:0x3ffd64c1f86c
     #   |  +--Node:0x3ffd64c1f63c
-    #   +--Entety:0x3ffd64c1f40c
+    #   +--Node:0x3ffd64c1f40c
     #
     # By passing `as_array: true` the method will instead return an array
     # containing each of the output lines. The method also accepts a block
