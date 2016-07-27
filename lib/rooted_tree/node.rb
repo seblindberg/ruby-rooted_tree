@@ -56,9 +56,9 @@ module RootedTree
     end
 
     def freeze
-      super
       @value.freeze
       children.each(&:freeze)
+      super
     end
 
     # Leaf?
