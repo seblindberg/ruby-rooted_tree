@@ -630,16 +630,26 @@ describe RootedTree::Node do
   end
 
   describe '#+' do
-    it 'adds two trees together under a new root' do
-      parent = child_a + child_b
-      enum = parent.children
-      assert_same child_a, enum.next
-      assert_same child_b, enum.next
-    end
-
     it 'fails to add nodes that are not roots' do
       root << child_a
       assert_raises(RootedTree::StructureException) { child_a + child_b }
+    end
+      
+    it 'adds two trees together under a new root' do
+      parent = child_a + child_b
+      
+      assert_same child_a, parent.child(0)
+      assert_same child_b, parent.child(1)
+    end
+    
+    it 'copies the nodes if they are frozen' do
+      child_a.freeze
+      child_b.freeze
+      
+      parent = child_a + child_b
+      
+      refute_same child_a, parent.child(0)
+      refute_same child_b, parent.child(1)
     end
   end
 

@@ -399,15 +399,19 @@ module RootedTree
     # Add
     #
     # Add two roots together to create a larger tree. A new common root will be
-    # created and returned.
+    # created and returned. Note that if the any of the root nodes are not
+    # frozen they will be modified, and as a result seize to be roots.
 
     def +(other)
       unless root? && other.root?
         raise StructureException, 'Only roots can be added'
       end
+      
+      a = frozen? ? dup : self
+      b = other.frozen? ? other.dup : other
 
-      root = self.class.new
-      root << self << other
+      ab = self.class.new
+      ab << a << b
     end
 
     # Equality
