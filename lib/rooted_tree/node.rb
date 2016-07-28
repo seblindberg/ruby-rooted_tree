@@ -61,16 +61,12 @@ module RootedTree
       super
     end
 
-    # Leaf?
-    #
-    # A node is a leaf if it has no children.
+    # Returns true if this node is a leaf. A leaf is a node with no children.
 
     def leaf?
       @degree == 0
     end
 
-    # Internal?
-    #
     # Returns true if the node is internal, which is equivalent to it having
     # children.
 
@@ -78,17 +74,13 @@ module RootedTree
       !leaf?
     end
 
-    # Root?
-    #
-    # Returns true if node has no parent.
+    # Returns true if the node has no parent.
 
     def root?
       @parent.nil?
     end
 
-    # Root
-    #
-    # Returns the root of the tree.
+    # Returns the root of the tree structure that the node is part of.
 
     def root
       return self if root?
@@ -98,24 +90,18 @@ module RootedTree
       node
     end
 
-    # First?
-    #
     # Returns true if this node is the first of its siblings.
 
     def first?
       @prev.nil?
     end
 
-    # Last?
-    #
     # Returns true if this node is the last of its siblings.
 
     def last?
       @next.nil?
     end
 
-    # Depth
-    #
     # Returns the depth of the node within the tree
 
     def depth
@@ -124,8 +110,6 @@ module RootedTree
 
     alias level depth
 
-    # Max Depth
-    #
     # Returns the maximum node depth under this node.
 
     def max_depth(offset = depth)
@@ -134,36 +118,34 @@ module RootedTree
       children.map { |c| c.max_depth offset + 1 }.max
     end
 
-    # Max Degree
-    #
     # Returns the highest child count of the nodes in the subtree.
 
     def max_degree
       children.map(&:degree).push(degree).max
     end
 
-    # Size
-    #
     # Calculate the size in vertecies of the subtree.
+    #
+    # Returns the number of nodes under this node, including self.
 
     def size
       children.reduce(1) { |a, e| a + e.size }
     end
 
-    # Next
-    #
     # Access the next sibling. Raises a StopIteration if this node is the last
     # one.
+    #
+    # Returns the previous sibling node.
 
     def next
       raise StopIteration if last?
       @next
     end
 
-    # Prev(ious)
-    #
     # Access the previous sibling. Raises a StopIteration if this node is the
     # first one.
+    #
+    # Returns the previous sibling node.
 
     def prev
       raise StopIteration if first?
@@ -172,19 +154,19 @@ module RootedTree
 
     alias previous prev
 
-    # Parent
-    #
     # Access the parent node. Raises a StopIteration if this node is the
     # root.
+    #
+    # Returns the parent node.
 
     def parent
       raise StopIteration if root?
       @parent
     end
 
-    # Append Sibling
-    #
     # Insert a child between this node and the one after it.
+    #
+    # Returns self.
 
     def append_sibling(value = nil)
       raise StructureException, 'Root node can not have siblings' if root?
@@ -203,9 +185,9 @@ module RootedTree
       @next = node
     end
 
-    # Prepend Sibling
-    #
     # Insert a child between this node and the one before it.
+    #
+    # Returns self.
 
     def prepend_sibling(value = nil)
       raise StructureException, 'Root node can not have siblings' if root?
@@ -232,9 +214,9 @@ module RootedTree
       node.parent = self
     end
 
-    # Append Child
-    #
     # Insert a child after the last one.
+    #
+    # Returns self.
 
     def append_child(value = nil)
       if leaf?
@@ -247,9 +229,9 @@ module RootedTree
 
     alias << append_child
 
-    # Prepend Child
-    #
     # Insert a child before the first one.
+    #
+    # Returns self.
 
     def prepend_child(value = nil)
       if leaf?
@@ -259,9 +241,9 @@ module RootedTree
       end
     end
 
-    # Extract
-    #
     # Extracts the node and its subtree from the larger structure.
+    #
+    # Returns self, now made root.
 
     def extract
       return self if root?
@@ -283,9 +265,9 @@ module RootedTree
       self
     end
 
-    # Delete
-    #
     # Removes the node from the tree.
+    #
+    # Returns an array of the children to the deleted node, now made roots.
 
     def delete
       extract.children.map do |child|
@@ -294,12 +276,11 @@ module RootedTree
       end
     end
 
-    # Ancestors
+    # Iterates over the nodes above this in the tree hierarchy and yields them
+    # to a block. If no block is given an enumerator is returned.
     #
     # Returns an enumerator that will iterate over the parents of this node
     # until the root is reached.
-    #
-    # If a block is given it will be yielded to.
 
     def ancestors
       return to_enum(__callee__) unless block_given?
@@ -310,14 +291,14 @@ module RootedTree
       end
     end
 
-    # Children
-    #
-    # Yields to each of the node children. The default order is left-to-right,
-    # but by passing rtl: true the order can be reversed. If a block is not
-    # given an enumerator is returned.
+    # Yields each of the node children. The default order is left-to-right, but
+    # by passing rtl: true the order is reversed. If a block is not given an
+    # enumerator is returned.
     #
     # Note that the block will catch any StopIteration that is raised and
     # terminate early, returning the value of the exception.
+    #
+    # rtl - reverses the iteration order if true.
 
     def children(rtl: false)
       return to_enum(__callee__, rtl: rtl) unless block_given?
@@ -335,9 +316,14 @@ module RootedTree
       end
     end
 
-    # Child
+    # Accessor method for any of the n children under this node. If called
+    # without an argument and the node has anything but exactly one child an
+    # exception will be raised.
     #
-    # Accessor method for any of the n children under this node.
+    # n - the n:th child to be returned. If n is negative the indexing will be
+    #     reversed and the children counted from the last to the first.
+    #
+    # Returns the child at the n:th index.
 
     def child(n = nil)
       if n.nil?
@@ -383,9 +369,10 @@ module RootedTree
       children(rtl: rtl) { |v| v.leafs(rtl: rtl, &block) }
     end
 
-    # Edges
+    # Iterates over each of the edges and yields the parent and the child. If no
+    # block is given an enumerator is returned.
     #
-    # Iterates over each of the edges.
+    # block - an optional block that will be yielded to, if given.
 
     def edges(&block)
       return to_enum(__callee__) unless block_given?
@@ -396,11 +383,13 @@ module RootedTree
       end
     end
 
-    # Add
-    #
     # Add two roots together to create a larger tree. A new common root will be
     # created and returned. Note that if the any of the root nodes are not
     # frozen they will be modified, and as a result seize to be roots.
+    #
+    # other - a Node-like object that responds true to #root?
+    #
+    # Returns a new root with the two nodes as children.
 
     def +(other)
       unless root? && other.root?
@@ -414,7 +403,7 @@ module RootedTree
       ab << a << b
     end
 
-    # Equality
+    # Compare one node (sub)structure with another.
     #
     # Returns true if the two vertecies form identical subtrees
 
@@ -425,8 +414,6 @@ module RootedTree
       children.to_a == other.children.to_a
     end
 
-    # Tree!
-    #
     # Wraps the entire tree in a Tree object. The operation will freeze the node
     # structure, making it immutable. If this node is a child the root will be
     # found and passed to Tree.new.
@@ -435,32 +422,24 @@ module RootedTree
       Tree.new root
     end
 
-    # Tree
-    #
     # Duplicates the entire tree and calls #tree! on the copy.
 
     def tree
       root.dup.tree!
     end
 
-    # Subtree!
-    #
     # Extracts this node from the larger tree and wraps it in a Tree object.
 
     def subtree!
       Tree.new extract
     end
 
-    # Subtree
-    #
     # Duplicates this node and its descendants and wraps them in a Tree object.
 
     def subtree
       Tree.new dup
     end
 
-    # Inspect
-    #
     # Visalizes the tree structure in a style very similar to the cli tool tree.
     # An example of the output can be seen below. Note that the output string
     # contains unicode characters.
