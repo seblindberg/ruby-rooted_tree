@@ -5,27 +5,27 @@ module RootedTree
     # Returns the maximum degree (highest number of children) in the tree.
 
     def degree
-      @degree ||= root.max_degree
+      root.max_degree
     end
 
     # Returns the maximum depth of the tree.
 
     def depth
-      @depth ||= root.max_depth
+      root.max_depth
     end
 
     # Iterates over each node in the tree. When given a block it will be yielded
     # to once for each node. If no block is given an enumerator is returned.
 
     def each_node(&block)
-      @root.each(&block)
+      root.each(&block)
     end
 
     # Iterates over each leaf in the tree. When given a block it will be yielded
     # to once for leaf node. If no block is given an enumerator is returned.
 
     def each_leaf(&block)
-      @root.leafs(&block)
+      root.leafs(&block)
     end
 
     # Iterates over each edge in the tree. An edge is composed of the parent
@@ -34,7 +34,7 @@ module RootedTree
     # returned.
 
     def each_edge(&block)
-      @root.edges(&block)
+      root.edges(&block)
     end
   end
 end
