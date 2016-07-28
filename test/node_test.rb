@@ -553,6 +553,11 @@ describe RootedTree::Node do
       root << (child_a << child_c) << child_b
       assert_equal [root, [[child_a, [child_c]], child_b]], root.to_a
     end
+    
+    it 'returns a flattened array' do
+      root << (child_a << child_c) << child_b
+      assert_equal [root, child_a, child_c, child_b], root.to_a(flatten:true)
+    end
   end
 
   describe '#leafs' do

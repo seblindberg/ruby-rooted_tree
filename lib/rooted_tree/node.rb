@@ -368,9 +368,12 @@ module RootedTree
     #   |
     #   c
     #
+    # flatten - flattens the array if true.
+    #
     # Returns a nested array of nodes.
 
-    def to_a
+    def to_a flatten: false
+      return super() if flatten
       return self if leaf?
       [self, children.map(&:to_a)]
     end
