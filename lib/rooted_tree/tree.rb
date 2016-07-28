@@ -28,5 +28,17 @@ module RootedTree
     def depth
       @depth ||= root.max_depth
     end
+    
+    def each_node(&block)
+      @root.each(&block)
+    end
+    
+    def each_leaf(&block)
+      @root.leafs(&block)
+    end
+    
+    def each_edge(&block)
+      @root.edges(&block)
+    end
   end
 end
