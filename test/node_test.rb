@@ -542,6 +542,18 @@ describe RootedTree::Node do
       assert_raises(StopIteration) { enum.next }
     end
   end
+  
+  describe '#to_a' do
+    it 'returns an array' do
+      root << child_a << child_b
+      assert_equal [root, [child_a, child_b]], root.to_a
+    end
+    
+    it 'returns a nested array' do
+      root << (child_a << child_c) << child_b
+      assert_equal [root, [[child_a, [child_c]], child_b]], root.to_a
+    end
+  end
 
   describe '#leafs' do
     it 'returns an enumerator' do

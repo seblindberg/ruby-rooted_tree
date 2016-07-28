@@ -348,8 +348,6 @@ module RootedTree
       end
     end
 
-    # Each
-    #
     # Yields first to self and then to each child. If a block is not given an
     # enumerator is returned.
 
@@ -359,9 +357,27 @@ module RootedTree
       children { |v| v.each(&block) }
     end
 
-    # Leafs
+    # Converts the tree structure to a nested array of the nodes. Each internal
+    # node is placed at index zero of its own array, followed by an array of its
+    # children. Leaf nodes are not wraped in arrays but inserted directly.
     #
+    # Example:
+    #     r
+    #    / \
+    #   a   b  => [r, [[a, [c]], b]]
+    #   |
+    #   c
+    #
+    # Returns a nested array of nodes.
+
+    def to_a
+      return self if leaf?
+      [self, children.map(&:to_a)]
+    end
+
     # Iterates over each of the leafs.
+    #
+    # rtl - if true the iteration order is switched to right to left.
 
     def leafs(rtl: false, &block)
       return to_enum(__callee__, rtl: rtl) unless block_given?
