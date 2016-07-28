@@ -434,32 +434,6 @@ module RootedTree
       children.to_a == other.children.to_a
     end
 
-    # Wraps the entire tree in a Tree object. The operation will freeze the node
-    # structure, making it immutable. If this node is a child the root will be
-    # found and passed to Tree.new.
-
-    def tree!
-      Tree.new root
-    end
-
-    # Duplicates the entire tree and calls #tree! on the copy.
-
-    def tree
-      root.dup.tree!
-    end
-
-    # Extracts this node from the larger tree and wraps it in a Tree object.
-
-    def subtree!
-      Tree.new extract
-    end
-
-    # Duplicates this node and its descendants and wraps them in a Tree object.
-
-    def subtree
-      Tree.new dup
-    end
-
     # Visalizes the tree structure in a style very similar to the cli tool tree.
     # An example of the output can be seen below. Note that the output string
     # contains unicode characters.
