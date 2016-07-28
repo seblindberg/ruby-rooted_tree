@@ -616,6 +616,11 @@ describe RootedTree::Node do
     it 'returns true for leafs' do
       assert_equal child_a, child_b
     end
+    
+    it 'returns false when the values are different' do
+      child_a.value = :value
+      refute_equal child_a, child_b
+    end
 
     it 'returns true for nodes with identical subtrees' do
       child_a << subject.new << subject.new

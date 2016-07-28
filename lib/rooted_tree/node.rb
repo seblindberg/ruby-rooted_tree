@@ -430,6 +430,7 @@ module RootedTree
     def ==(other)
       return false unless other.is_a? self.class
       return false unless degree == other.degree
+      return false unless value == other.value
 
       children.to_a == other.children.to_a
     end
