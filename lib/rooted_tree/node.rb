@@ -361,14 +361,15 @@ module RootedTree
     # node is placed at index zero of its own array, followed by an array of its
     # children. Leaf nodes are not wraped in arrays but inserted directly.
     #
-    # Example:
+    # flatten - flattens the array if true.
+    #
+    # Example
+    #
     #     r
     #    / \
     #   a   b  => [r, [[a, [c]], b]]
     #   |
     #   c
-    #
-    # flatten - flattens the array if true.
     #
     # Returns a nested array of nodes.
 
