@@ -27,4 +27,49 @@ describe RootedTree::Tree do
       assert_equal subject.root.max_depth, subject.depth
     end
   end
+  
+  describe '#each_node' do
+    it 'returns an enumerator' do
+      assert_kind_of Enumerator, subject.each_node
+    end
+    
+    it 'iterates over all of the nodes' do
+      assert_equal subject.root.each.to_a, subject.each_node.to_a
+    end
+    
+    it 'accepts a block' do
+      nodes = subject.root.each
+      subject.each_node { |node| assert_equal nodes.next, node }
+    end
+  end
+  
+  describe '#each_leaf' do
+    it 'returns an enumerator' do
+      assert_kind_of Enumerator, subject.each_leaf
+    end
+    
+    it 'iterates over all of the nodes' do
+      assert_equal subject.root.leafs.to_a, subject.each_leaf.to_a
+    end
+    
+    it 'accepts a block' do
+      leafs = subject.root.leafs
+      subject.each_leaf { |leaf| assert_equal leafs.next, leaf }
+    end
+  end
+  
+  describe '#each_edge' do
+    it 'returns an enumerator' do
+      assert_kind_of Enumerator, subject.each_edge
+    end
+    
+    it 'iterates over all of the nodes' do
+      assert_equal subject.root.edges.to_a, subject.each_edge.to_a
+    end
+    
+    it 'accepts a block' do
+      edges = subject.root.edges
+      subject.each_edge { |*edge| assert_equal edges.next, edge }
+    end
+  end
 end
