@@ -15,6 +15,13 @@ end
 
 describe RootedTree::Tree do
   subject { Treelike.new }
+  
+  describe '#freeze' do
+    it 'freezes the node structure' do
+      subject.freeze
+      assert subject.root.frozen?
+    end
+  end
     
   describe '#degree' do
     it 'returns the maximum degree' do

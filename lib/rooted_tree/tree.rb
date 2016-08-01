@@ -2,6 +2,14 @@
 
 module RootedTree
   module Tree
+    
+    # Freezes the node structure that is part of the tree.
+    
+    def freeze
+      root.freeze
+      super
+    end
+    
     # Returns the maximum degree (highest number of children) in the tree.
 
     def degree
