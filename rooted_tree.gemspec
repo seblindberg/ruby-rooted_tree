@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["seb.lindberg@gmail.com"]
 
   spec.summary       = %q{A basic implementation of a tree data structure.}
-  spec.description   = %q{This gem implements a rooted, ordered tree, with a focus on easy iteration over nodes and access to basic tree prperties.}
+  spec.description   = %q{This gem implements a rooted, ordered tree, with a focus on easy iteration over nodes and access to basic tree properties.}
   spec.homepage      = "https://github.com/seblindberg/ruby-rooted_tree"
   spec.license       = "MIT"
 
