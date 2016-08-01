@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+# Tree
+#
+# Include this module in any object that responds to #root with a Node
+# structure. The mixin provides some methods for describing the tree as well as
+# direct access to some of the iteration methods in Node.
+
 module RootedTree
   module Tree
     
