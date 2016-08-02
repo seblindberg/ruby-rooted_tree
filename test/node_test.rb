@@ -435,10 +435,14 @@ describe RootedTree::Node do
 
     it 'creates a separate subtree' do
       root << (child_a << child_b) << child_c
-      child_a_dup = child_a.dup
 
       refute child_a.root?
-      assert child_a_dup.root?
+      assert child_a.dup.root?
+    end
+
+    it 'dupes the value' do
+      root.value = 'value'
+      refute_same root.value, root.dup.value
     end
   end
 

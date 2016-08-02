@@ -31,10 +31,22 @@ module RootedTree
 
     alias arity degree
 
+    # Creates a new node with the given object as its value, unless a Node is
+    # passed, in which case it will be returned.
+    #
+    # value - the object to be used as value for a new Node, or a Node object.
+    #
+    # Returns a Node object.
+
     def self.[](value = nil)
       return value if value.is_a? self
       new value
     end
+    
+    # Create a new, unconnected Node object with an optional value. The value is
+    # owned by the Node instance and will be duped along with it.
+    #
+    # value - arbitrary object that is owned by the Node instance.
 
     def initialize(value = nil)
       @parent = nil
@@ -45,14 +57,27 @@ module RootedTree
       @degree = 0
       @value = value
     end
+    
+    # When copying a node the child nodes are copied as well, along with the
+    # value.
 
-    def initialize_copy(*)
-      duped_children = children.map { |v| v.dup.tap { |w| w.parent = self } }
+    def initialize_copy(original)
+      # Dup each child and link them to the new parent
+      duped_children = original.children.map do |child|
+        child.dup.tap { |n| n.parent = self }
+      end
+      
+      # Connect each child to its adjecent siblings
       duped_children.each_cons(2) { |a, b| a.next, b.prev = b, a }
 
       @parent = nil
       @first_child = duped_children.first
       @last_child = duped_children.last
+      @value = begin
+                 original.value.dup
+               rescue TypeError
+                 original.value
+               end
     end
 
     def freeze
