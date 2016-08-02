@@ -81,6 +81,9 @@ module RootedTree
                
       super
     end
+    
+    # Freezes the value as well as each of the children, outside of the normal
+    # behaviour.
 
     def freeze
       @value.freeze
