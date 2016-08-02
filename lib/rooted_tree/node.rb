@@ -61,7 +61,7 @@ module RootedTree
     # When copying a node the child nodes are copied as well, along with the
     # value.
 
-    def initialize_copy(original)
+    def initialize_dup(original)
       # Dup each child and link them to the new parent
       duped_children = original.children.map do |child|
         child.dup.tap { |n| n.parent = self }
