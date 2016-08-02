@@ -318,9 +318,9 @@ module RootedTree
     # Returns an array of the children to the deleted node, now made roots.
 
     def delete
-      extract.children.map do |child|
+      extract.children.to_a.each do |child|
         child.parent = nil
-        child
+        child.next = child.prev = nil
       end
     end
 

@@ -439,8 +439,13 @@ describe RootedTree::Node do
     it 'returns the children as subtrees' do
       root << child_a << child_b << child_c
       subtrees = root.delete
-      assert_equal [child_a, child_b, child_c], subtrees
+      # An array of three Nodes should have been returned
+      assert_equal 3, subtrees.length
+      assert_kind_of subject, subtrees.first
+      # The three children should now be roots
       assert child_a.root? && child_b.root? && child_c.root?
+      assert_nil child_a.next!
+      assert_nil child_b.prev!
     end
   end
 
