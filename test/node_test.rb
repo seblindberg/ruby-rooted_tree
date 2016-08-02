@@ -182,15 +182,26 @@ describe RootedTree::Node do
       assert_raises(StopIteration) { root.next }
     end
 
-    it 'returns the next node' do
+    it 'returns the next sibling' do
       root << child_a << child_b
 
       assert_same child_b, child_a.next
+    end
+    
+    it 'has a bang version that returns the next sibling' do
+      root << child_a << child_b
+      
+      assert_same child_b, child_a.next!
     end
 
     it 'raises a StopIteration at the last child' do
       root << child
       assert_raises(StopIteration) { child.next }
+    end
+    
+    it 'returns nil at the last child when calling the bang version' do
+      root << child
+      assert_nil child.next!
     end
   end
 
@@ -199,14 +210,30 @@ describe RootedTree::Node do
       assert_raises(StopIteration) { root.prev }
     end
 
-    it 'returns the previous node' do
+    it 'returns the previous sibling' do
       root << child_a << child_b
       assert_same child_a, child_b.prev
+    end
+
+    it 'has a bang version that returns the previous sibling' do
+      root << child_a << child_b
+      
+      assert_same child_a, child_b.prev!
     end
 
     it 'raises a StopIteration at the first child' do
       root << child
       assert_raises(StopIteration) { child.prev }
+    end
+    
+    it 'returns nil at the first child when calling the bang version' do
+      root << child
+      assert_nil child.prev!
+    end
+    
+    it 'is aliased to #previous (and #prev! to #previous!)' do
+      assert_equal root.method(:prev), root.method(:previous)
+      assert_equal root.method(:prev!), root.method(:previous!)
     end
   end
 

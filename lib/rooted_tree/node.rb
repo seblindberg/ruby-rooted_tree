@@ -165,10 +165,19 @@ module RootedTree
     # Access the next sibling. Raises a StopIteration if this node is the last
     # one.
     #
-    # Returns the previous sibling node.
+    # Returns the next sibling node.
 
     def next
       raise StopIteration if last?
+      @next
+    end
+    
+    # Dangerous accessor of the next sibling. Unlike the regular #next this
+    # method will return nil if this node is the last one.
+    #
+    # Returns the next sibling node or nil if this node is last.
+    
+    def next!
       @next
     end
 
@@ -183,6 +192,15 @@ module RootedTree
     end
 
     alias previous prev
+    
+    # Dangerous accessor of the previous sibling. Unlike the regular #prev this
+    # method will return nil if this node is the first one.
+    
+    def prev!
+      @prev
+    end
+    
+    alias previous! prev!
 
     # Access the parent node. Raises a StopIteration if this node is the
     # root.
