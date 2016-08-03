@@ -447,6 +447,14 @@ describe RootedTree::Node do
       assert_nil child_a.next!
       assert_nil child_b.prev!
     end
+    
+    it 'removes the children from the deleted node' do
+      root << child
+      root.delete
+      
+      assert_equal 0, root.degree
+      assert_equal 0, root.children.count
+    end
   end
 
   describe '#dup' do

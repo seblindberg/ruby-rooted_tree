@@ -318,10 +318,7 @@ module RootedTree
     # Returns an array of the children to the deleted node, now made roots.
 
     def delete
-      extract.children.to_a.each do |child|
-        child.parent = nil
-        child.next = child.prev = nil
-      end
+      extract.children.to_a.each(&:extract)
     end
 
     # Iterates over the nodes above this in the tree hierarchy and yields them
