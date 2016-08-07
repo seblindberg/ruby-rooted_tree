@@ -475,7 +475,7 @@ describe RootedTree::Node do
 
     it 'creates a separate subtree' do
       root << (child_a << child_b) << child_c
-
+      
       refute child_a.root?
       assert child_a.dup.root?
     end
