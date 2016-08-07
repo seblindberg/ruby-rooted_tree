@@ -23,17 +23,14 @@
 module RootedTree
   class Node < Linked::Item
     include Linked::List
-    #include Enumerable
-
-    #attr_accessor :first_child, :last_child, :degree #, :value
-    attr_writer :parent #,:next, :prev,
-
-    protected :parent= #, :first_child=, :last_child=, :degree= #:next=, :prev=,
 
     alias degree count
     alias arity degree
     alias first_child first
     alias last_child last
+    alias << push
+
+    protected :first, :last, :each_item
 
     # Creates a new node with the given object as its value, unless a Node is
     # passed, in which case it will be returned.
@@ -47,59 +44,6 @@ module RootedTree
       new value
     end
     
-    # Create a new, unconnected Node object with an optional value. The value is
-    # owned by the Node instance and will be duped along with it.
-    #
-    # value - arbitrary object that is owned by the Node instance.
-
-    def initialize(value = nil)
-      super
-      #@parent = nil
-      #@next = nil
-      #@prev = nil
-      #@first_child = nil
-      #@last_child = nil
-      #@degree = 0
-      #@value = value
-    end
-    
-    # When copying a node the child nodes are copied as well, along with the
-    # value.
-
-    def initialize_dup(source)
-      # Dup each child and link them to the new parent
-      # duped_children = source.children.map do |child|
-      #   child.dup.tap { |n| n.parent = self }
-      # end
-      
-      # Connect each child to its adjecent siblings
-      #duped_children.each_cons(2) { |a, b| a.next, b.prev = b, a }
-      
-      #@parent = nil
-      
-      #@first_child = duped_children.first
-      #@last_child = duped_children.last
-      # @value = begin
-      #            source.value.dup
-      #          rescue TypeError
-      #            source.value
-      #          end
-               
-      super
-      
-      #children { |child| child.parent = self }
-      
-    end
-    
-    # Freezes the value as well as each of the children, outside of the normal
-    # behaviour.
-
-    def freeze
-      value.freeze
-      children.each(&:freeze)
-      super
-    end
-
     # Returns true if this node is a leaf. A leaf is a node with no children.
 
     def leaf?
@@ -110,7 +54,7 @@ module RootedTree
     # children.
 
     def internal?
-      !leaf?
+      degree > 0
     end
 
     # Returns true if the node has no parent.
@@ -128,18 +72,6 @@ module RootedTree
       loop { node = node.parent }
       node
     end
-
-    # Returns true if this node is the first of its siblings.
-
-    # def first?
-    #   @prev.nil?
-    # end
-
-    # Returns true if this node is the last of its siblings.
-
-    # def last?
-    #   @next.nil?
-    # end
 
     # Returns the depth of the node within the tree
 
@@ -171,46 +103,6 @@ module RootedTree
       children.reduce(1) { |a, e| a + e.size }
     end
 
-    # Access the next sibling. Raises a StopIteration if this node is the last
-    # one.
-    #
-    # Returns the next sibling node.
-
-    # def next
-    #   raise StopIteration if last?
-    #   @next
-    # end
-    
-    # Dangerous accessor of the next sibling. Unlike the regular #next this
-    # method will return nil if this node is the last one.
-    #
-    # Returns the next sibling node or nil if this node is last.
-    
-    # def next!
-    #   @next
-    # end
-
-    # Access the previous sibling. Raises a StopIteration if this node is the
-    # first one.
-    #
-    # Returns the previous sibling node.
-
-    # def prev
-    #   raise StopIteration if first?
-    #   @prev
-    # end
-    #
-    # alias previous prev
-    
-    # Dangerous accessor of the previous sibling. Unlike the regular #prev this
-    # method will return nil if this node is the first one.
-    
-    # def prev!
-    #   @prev
-    # end
-    #
-    # alias previous! prev!
-
     # Access the parent node. Raises a StopIteration if this node is the
     # root.
     #
@@ -228,18 +120,6 @@ module RootedTree
     def append_sibling(value = nil)
       raise StructureException, 'Root node can not have siblings' if root?
 
-      # node = self.class[value]
-      # node.next = @next
-      # node.prev = self
-      # node.parent = @parent
-      # @parent.degree += 1
-      #
-      # if @next
-      #   @next.prev = node
-      # else
-      #   @parent.last_child = node
-      # end
-      # @next = node
       append value
       self
     end
@@ -251,28 +131,8 @@ module RootedTree
     def prepend_sibling(value = nil)
       raise StructureException, 'Root node can not have siblings' if root?
 
-      # node = self.class[value]
-      # node.next = self
-      # node.prev = @prev
-      # node.parent = @parent
-      # @parent.degree += 1
-      #
-      # if @prev
-      #   @prev.next = node
-      # else
-      #   @parent.first_child = node
-      # end
-      # @prev = node
       prepend value
       self
-    end
-
-    private def add_child_to_leaf(value)
-      node = self.class[value]
-      @first_child = @last_child = node
-      node.next = node.prev = nil
-      @degree = 1
-      node.parent = self
     end
 
     # Insert a child after the last one.
@@ -280,29 +140,15 @@ module RootedTree
     # Returns self.
 
     def append_child(value = nil)
-      # if leaf?
-      #   add_child_to_leaf value
-      # else
-      #   @last_child.append_sibling value
-      # end
       push value
-      self
     end
-
-    alias << append_child
 
     # Insert a child before the first one.
     #
     # Returns self.
 
     def prepend_child(value = nil)
-      # if leaf?
-      #   add_child_to_leaf value
-      # else
-      #   @first_child.prepend_sibling value
-      # end
       unshift value
-      self
     end
 
     # Extracts the node and its subtree from the larger structure.
@@ -312,21 +158,6 @@ module RootedTree
     def extract
       return self if root?
 
-      # if last?
-      #   parent.last_child = @prev
-      # else
-      #   @next.prev = @prev
-      # end
-      #
-      # if first?
-      #   parent.first_child = @next
-      # else
-      #   @prev.next = @next
-      # end
-      #
-      # @parent.degree -= 1
-      # @prev = @next = @parent = nil
-      #@parent = nil
       method(:delete).super_method.call
       self
     end
@@ -364,21 +195,7 @@ module RootedTree
     # rtl - reverses the iteration order if true.
 
     def children(rtl: false, &block)
-      method(:each).super_method.call(reverse: rtl, &block)
-
-      # return to_enum(__callee__, rtl: rtl) unless block_given?
-      # return if leaf?
-      #
-      # child, advance = if rtl
-      #                    [@last_child, :prev]
-      #                  else
-      #                    [@first_child, :next]
-      #                  end
-      #
-      # loop do
-      #   yield child
-      #   child = child.send advance
-      # end
+      each_item(reverse: rtl, &block)
     end
 
     # Accessor method for any of the n children under this node. If called
@@ -498,38 +315,6 @@ module RootedTree
       return false unless value == other.value
 
       children.to_a == other.children.to_a
-    end
-
-    # Visalizes the tree structure in a style very similar to the cli tool tree.
-    # An example of the output can be seen below. Note that the output string
-    # contains unicode characters.
-    #
-    #   Node:0x3ffd64c22abc
-    #   |--Node:0x3ffd64c1fd30
-    #   |  |--Node:0x3ffd64c1f86c
-    #   |  +--Node:0x3ffd64c1f63c
-    #   +--Node:0x3ffd64c1f40c
-    #
-    # By passing `as_array: true` the method will instead return an array
-    # containing each of the output lines. The method also accepts a block
-    # which, if given, will be yielded to once for every node, and the output
-    # will be used as node labels instead of the default identifier.
-
-    def inspect(as_array: false, &block)
-      unless block_given?
-        block = proc { |v| format '%s:0x%0x', v.class.name, v.object_id }
-      end
-
-      res = [block.call(self)]
-
-      children do |child|
-        lines = child.inspect(as_array: true, &block).each
-        res << ((child.last? ? '└─╴' : '├─╴') + lines.next)
-        prep = child.last? ? '   ' : '│  '
-        loop { res << (prep + lines.next) }
-      end
-
-      as_array ? res : res.join("\n")
     end
   end
 end
