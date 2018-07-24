@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module RootedTree
+  # rubocop:disable Metrics/ClassLength
+
   # Nodes are mutable by default, since creating anyting but simple leafs would
   # otherwise be imposible. Calling #freeze on a node makes the entire subtree
   # immutable. This is used by the Tree class which only operates on frozen node
@@ -19,8 +21,9 @@ module RootedTree
   # The terminology is mostly referenced from
   # http://www.cs.columbia.edu/~cs4203/files/GT-Lec4.pdf.
   class Node < Linked::Item
-    extend Forwardable
+    extend  Forwardable
     include Linked::List
+    include Mutable
 
     # Creates a new node with the given object as its value, unless a Node is
     # passed, in which case it will be returned.
@@ -96,69 +99,6 @@ module RootedTree
     def parent
       raise StopIteration if root?
       list
-    end
-
-    # Insert a child between this node and the one after it.
-    #
-    # @raise [StructureException] if this node has no parent.
-    #
-    # @param  value [Object] the value of the new sibling.
-    # @return [self]
-    def append_sibling(value = nil)
-      raise StructureException, 'Root node can not have siblings' if root?
-
-      append value
-      self
-    end
-
-    # Insert a child between this node and the one before it.
-    #
-    # @raise [StructureException] if this node has no parent.
-    #
-    # @param  value [Object] the value of the new sibling.
-    # @return [self]
-    def prepend_sibling(value = nil)
-      raise StructureException, 'Root node can not have siblings' if root?
-
-      prepend value
-      self
-    end
-
-    # Insert a child after the last one.
-    #
-    # @param  value [Object] the value of the new sibling.
-    # @return [self]
-    def append_child(value = nil)
-      push value
-    end
-
-    # @see #append_child.
-    alias << append_child
-
-    # Insert a child before the first one.
-    #
-    # @param  value [Object] the value of the new sibling.
-    # @return [self]
-    def prepend_child(value = nil)
-      unshift value
-    end
-
-    # Extracts the node and its subtree from the larger structure.
-    #
-    # @return [self] the node will now be root.
-    def extract
-      return self if root?
-
-      method(:delete).super_method.call
-      self
-    end
-
-    # Removes the node from the tree.
-    #
-    # @return [Array<Node>] an array of the children to the deleted node, now
-    #   made roots.
-    def delete
-      extract.children.to_a.each(&:extract)
     end
 
     # Iterates over the nodes above this in the tree hierarchy and yields them
@@ -310,4 +250,6 @@ module RootedTree
     protected :first, :last, :each_item
     private :push, :unshift, :list, :count
   end
+
+  # rubocop:enable Metrics/ClassLength
 end
