@@ -13,9 +13,17 @@ Gem::Specification.new do |spec|
   spec.summary       = 'A basic implementation of a tree data structure.'
   spec.description   = 'This gem implements a rooted, ordered tree, with a ' \
                        'focus on easy iteration over nodes and access to ' \
-                       'basic tree properties.'
+                       'basic tree properties.' \
+                       "\n\n" \
+                       'Moved to ---> "rooted".'
   spec.homepage      = 'https://github.com/seblindberg/ruby-rooted_tree'
   spec.license       = 'MIT'
+
+  spec.post_install_message = <<-MESSAGE
+  !    The 'rooted_tree' gem has been deprecated and replaced by 'rooted'.
+  !    See: https://rubygems.org/gems/rooted
+  !    And: https://github.com/seblindberg/ruby-rooted
+  MESSAGE
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     `git ls-files -z`.split("\x0")

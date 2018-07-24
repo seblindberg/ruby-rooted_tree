@@ -5,6 +5,8 @@
 [![Inline docs](http://inch-ci.org/github/seblindberg/ruby-rooted_tree.svg?branch=master)](http://inch-ci.org/github/seblindberg/ruby-rooted_tree)
 [![Documentation](http://img.shields.io/badge/docs-rdoc.info-blue.svg)](http://www.rubydoc.info/gems/rooted_tree/)
 
+Moved to ---> "[rooted](https://github.com/seblindberg/ruby-rooted)".
+
 This gem implements a _rooted, ordered tree_, but that name is a bit of a mouthful. It is ment to be used as a building block when working with any tree shaped data. For a brief recap of the terminology please see below. Please refer to https://en.wikipedia.org/wiki/Tree_structure for a more in depth description.
 
            A     A is the root.
@@ -82,7 +84,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/rooted_tree.
+Bug reports and pull requests are welcome on GitHub at https://github.com/seblindberg/ruby-rooted_tree.
 
 
 ## License
