@@ -1,13 +1,11 @@
-# RootedTree
+# 🌳 RootedTree
 
 [![Gem Version](https://badge.fury.io/rb/rooted_tree.png)](http://badge.fury.io/rb/rooted_tree)
 [![Build Status](https://travis-ci.org/seblindberg/ruby-rooted_tree.svg?branch=master)](https://travis-ci.org/seblindberg/ruby-rooted_tree)
-[![Coverage Status](https://coveralls.io/repos/github/seblindberg/ruby-rooted_tree/badge.svg?branch=master)](https://coveralls.io/github/seblindberg/ruby-rooted_tree?branch=master)
 [![Inline docs](http://inch-ci.org/github/seblindberg/ruby-rooted_tree.svg?branch=master)](http://inch-ci.org/github/seblindberg/ruby-rooted_tree)
+[![Documentation](http://img.shields.io/badge/docs-rdoc.info-blue.svg)](http://www.rubydoc.info/gems/rooted_tree/)
 
-A tree is a connected graph with no cycles. There, that is plenty of explanation. Please refer to https://en.wikipedia.org/wiki/Tree_structure for a more in depth description, but if you need one this library probably is not for you.
-
-This gem technically implements a _rooted, ordered tree_, but that name is a mouthful. It is ment to be used as a building block when working with any tree shaped data. For a brief recap of the terminology please see below.
+This gem implements a _rooted, ordered tree_, but that name is a bit of a mouthful. It is ment to be used as a building block when working with any tree shaped data. For a brief recap of the terminology please see below. Please refer to https://en.wikipedia.org/wiki/Tree_structure for a more in depth description.
 
            A     A is the root.
       ┌────┼──┐  B, C and D are all children of A.
