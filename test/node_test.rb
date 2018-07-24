@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 describe RootedTree::Node do
@@ -187,10 +189,10 @@ describe RootedTree::Node do
 
       assert_same child_b, child_a.next
     end
-    
+
     it 'has a bang version that returns the next sibling' do
       root << child_a << child_b
-      
+
       assert_same child_b, child_a.next!
     end
 
@@ -198,7 +200,7 @@ describe RootedTree::Node do
       root << child
       assert_raises(StopIteration) { child.next }
     end
-    
+
     it 'returns nil at the last child when calling the bang version' do
       root << child
       assert_nil child.next!
@@ -217,7 +219,7 @@ describe RootedTree::Node do
 
     it 'has a bang version that returns the previous sibling' do
       root << child_a << child_b
-      
+
       assert_same child_a, child_b.prev!
     end
 
@@ -225,12 +227,12 @@ describe RootedTree::Node do
       root << child
       assert_raises(StopIteration) { child.prev }
     end
-    
+
     it 'returns nil at the first child when calling the bang version' do
       root << child
       assert_nil child.prev!
     end
-    
+
     it 'is aliased to #previous (and #prev! to #previous!)' do
       assert_equal root.method(:prev), root.method(:previous)
       assert_equal root.method(:prev!), root.method(:previous!)
@@ -447,11 +449,11 @@ describe RootedTree::Node do
       assert_nil child_a.next!
       assert_nil child_b.prev!
     end
-    
+
     it 'removes the children from the deleted node' do
       root << child
       root.delete
-      
+
       assert_equal 0, root.degree
       assert_equal 0, root.children.count
     end
@@ -475,7 +477,7 @@ describe RootedTree::Node do
 
     it 'creates a separate subtree' do
       root << (child_a << child_b) << child_c
-      
+
       refute child_a.root?
       assert child_a.dup.root?
     end
@@ -586,21 +588,21 @@ describe RootedTree::Node do
       assert_raises(StopIteration) { enum.next }
     end
   end
-  
+
   describe '#to_a' do
     it 'returns an array' do
       root << child_a << child_b
       assert_equal [root, [child_a, child_b]], root.to_a
     end
-    
+
     it 'returns a nested array' do
       root << (child_a << child_c) << child_b
       assert_equal [root, [[child_a, [child_c]], child_b]], root.to_a
     end
-    
+
     it 'returns a flattened array' do
       root << (child_a << child_c) << child_b
-      assert_equal [root, child_a, child_c, child_b], root.to_a(flatten:true)
+      assert_equal [root, child_a, child_c, child_b], root.to_a(flatten: true)
     end
   end
 
@@ -660,7 +662,7 @@ describe RootedTree::Node do
     it 'returns true for leafs' do
       assert_equal child_a, child_b
     end
-    
+
     it 'returns false when the values are different' do
       child_a.value = :value
       refute_equal child_a, child_b
@@ -700,20 +702,20 @@ describe RootedTree::Node do
       root << child_a
       assert_raises(RootedTree::StructureException) { child_a + child_b }
     end
-      
+
     it 'adds two trees together under a new root' do
       parent = child_a + child_b
-      
+
       assert_same child_a, parent.child(0)
       assert_same child_b, parent.child(1)
     end
-    
+
     it 'copies the nodes if they are frozen' do
       child_a.freeze
       child_b.freeze
-      
+
       parent = child_a + child_b
-      
+
       refute_same child_a, parent.child(0)
       refute_same child_b, parent.child(1)
     end
@@ -722,7 +724,12 @@ describe RootedTree::Node do
   describe '#inspect' do
     it 'includes the class name and object id by default' do
       res = root.inspect
-      assert_equal format('%s:0x%0x', subject.name, root.object_id), res
+
+      expected = format '%<name>s:0x%0<id>x',
+                        name: subject.name,
+                        id: root.object_id
+
+      assert_equal expected, res
     end
 
     it 'accepts a block for labeling' do
@@ -730,7 +737,9 @@ describe RootedTree::Node do
       child_a << child_c
       label = 'a'
       res = root.inspect do |_|
-        (_, label = label, label.next).first
+        curr_label = label
+        label = label.next
+        curr_label
       end
 
       assert_equal "a\n├─╴b\n│  └─╴c\n└─╴d", res
