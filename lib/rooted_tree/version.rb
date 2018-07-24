@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
 module RootedTree
-  VERSION = '0.3.3'
+  # @return [String] the semantic version number of the library.
+  VERSION = '0.3.4'
 end
